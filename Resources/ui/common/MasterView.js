@@ -5,26 +5,89 @@ function MasterView() {
 		backgroundColor:'white'
 	});
 	
-	//some dummy data for our table view
-	var tableData = [
-		{title:'Apples', price:'1.25', hasChild:true, color: '#000'},
-		{title:'Grapes', price:'1.50', hasChild:true, color: '#000'},
-		{title:'Oranges', price:'2.50', hasChild:true, color: '#000'},
-		{title:'Bananas', price:'1.50', hasChild:true, color: '#000'},
-		{title:'Pears', price:'1.40', hasChild:true, color: '#000'},
-		{title:'Kiwis', price:'1.00', hasChild:true, color: '#000'}
-	];
+	// load Feed module
+	var Feed = require('Services/feed');
+	var episodesFeed = new Feed();
 	
-	var table = Ti.UI.createTableView({
-		data:tableData
+	// Load database module
+	var episodesDb = require('Services/db');
+	
+	// Create container for episodes
+	var episodesList = [];
+	
+	
+	// Update Feeds
+	Ti.API.info('Fetching remote feed');
+	episodesFeed.fetchRemoteFeed();
+	
+	Ti.App.addEventListener('fetchRemoteFeedFinished', function(e){
+		
+		// Get the date of the newest stored episode
+		var episodes = new episodesDb();
+		var latestUpdate = episodes.getLatestUpdate();
+		
+		// get the new episodes
+		Ti.API.debug('getting the new episodes');
+		newEpisodes = episodesFeed.getNewEpisodes(latestUpdate);
+		
+		Ti.API.debug(newEpisodes.length + ' new episodes to save');
+		
+		// Save new episodes to database
+		for(var i = 0, j = newEpisodes.length; i < j; i++){
+			// newEpisodes is an array with DOMElements
+			var itemNode = newEpisodes[i];
+			
+			// Feed.getEpisodeDetails returns an objects
+			var episode = episodesFeed.getEpisodeDetails(itemNode);
+			
+			Ti.API.debug(episode.title);
+			
+			episodes.saveEpisode(episode);
+		}
+		
+		// Remember to close the DB
+		episodes.close();
+		
+		Ti.App.fireEvent('episodesDbUpdated');
 	});
+// 	
+	Ti.App.addEventListener('episodesDbUpdated', reloadEpisodesTable);
+	
+	function reloadEpisodesTable(){
+		
+		Ti.API.info('Reloading episodes table');
+		
+		// Fetch episodes from db
+		var episodes = new episodesDb();
+		
+		// Db.getEpisodesList returns an array with objects
+		episodesList = episodes.getEpisodesList();
+		episodes.close();
+		
+		Ti.API.debug(episodesList.length + ' episodes in list');
+
+		// Add each episode to tableView
+		var episodes = episodesList.length;
+		for(var i = 0, j = episodes; i < j; i++){
+			var episode = episodesList[i];
+			Ti.API.debug('Adding episode ' + episode.title + ' to tableView');
+			var episodeRow = Ti.UI.createTableViewRow({
+				className: 'episodeRow',
+				title: episode.title,
+				rowIndex: i,
+				height: Ti.UI.Size
+			});
+			table.appendRow(episodeRow);
+		};
+	}
+	
+	var table = Ti.UI.createTableView({});
 	self.add(table);
 	
-	//add behavior
+	// add behavior
 	table.addEventListener('click', function(e) {
 		self.fireEvent('itemSelected', {
-			name:e.rowData.title,
-			price:e.rowData.price
+			episodeId: e.rowData.episodeId
 		});
 	});
 	
