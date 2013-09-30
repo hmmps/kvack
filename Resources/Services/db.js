@@ -42,22 +42,14 @@ function DB(){
 	// Expects an object with episode Details
 	// Returns ID of inserted row
 	self.saveEpisode = function(ep){
-		var query = 'INSERT INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
+		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
 		
 		// temp fake pubDate
 		ep.pubDate = 1234786;
 
-		// Do the actual search	
-		try{	
-			self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
-			Ti.API.debug(ep.title + ' saved localy');
-		}
-		
-		catch(e){
-			//See what kind of error it is
-			Ti.API.info('Episode ' + ep.title + ' already saved, skipping.');
-			Ti.API.error(e.message);
-		}
+		// Do the actual insert	
+		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
+		Ti.API.debug(ep.title + ' saved localy');
 		
 		return self.lastInsertRowId;
 	};
