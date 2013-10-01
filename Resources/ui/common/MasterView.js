@@ -10,11 +10,20 @@ function MasterView() {
 	var episodesFeed = new Feed();
 	
 	// Load database module
-	var episodesDb = require('Services/db');
+	var EpisodesDb = require('Services/db');
+
+        // Load episodeRow module
+        var EpisodeRow = require('ui/common/episodeRow');
+
+        // Load module for episodeRow
+        var EpisodeRow = require('ui/common/episodeRow');
 	
 	// Create container for episodes
 	var episodesList = [];
 	
+	// Create tableView for episodes
+	var table = Ti.UI.createTableView({});
+	self.add(table);
 	
 	// Update Feeds
 	Ti.API.info('Fetching remote feed');
@@ -23,7 +32,7 @@ function MasterView() {
 	Ti.App.addEventListener('fetchRemoteFeedFinished', function(e){
 		
 		// Get the date of the newest stored episode
-		var episodes = new episodesDb();
+		var episodes = new EpisodesDb();
 		var latestUpdate = episodes.getLatestUpdate();
 		
 		// get the new episodes
@@ -52,17 +61,35 @@ function MasterView() {
 	});
         
         // When database is updated, refersh the episodesTable 
-	Ti.App.addEventListener('episodesDbUpdated', reloadEpisodesTable);
+	Ti.App.addEventListener('episodesDbUpdated', addNewEpisodesToTable);
+
+        // Load all episode when opening app, to skip waiting for network
+        function loadEpisodesTable(){
+
+            Ti.API.info('Loading episodes to tableView');
+
+            // Fetch episodes from db
+            var episodes = new EpisodesDb();
+            var episodesList = episodes.getEpisodesList();
+            episodes.close();
+
+            // Add episodes to table
+            for(var i = 0, j = episodesList.length; i < j; i++){
+                var episode = episodesList[i];
+                var episodeRow = new EpisodeRow(episode);
+                table.appendRow(episodeRow);
+            };
+        };
 	
-	function reloadEpisodesTable(){
+	function addNewEpisodesToTable(){
 		
 		Ti.API.info('Reloading episodes table');
 		
 		// Fetch episodes from db
-		var episodes = new episodesDb();
+		var episodes = new EpisodesDb();
 		
 		// Db.getEpisodesList returns an array with objects
-		episodesList = episodes.getEpisodesList();
+		newEpisodesList = episodes.getNewEpisodesList(12387645);
 		episodes.close();
 		
 		Ti.API.debug(episodesList.length + ' episodes in list');
@@ -70,20 +97,25 @@ function MasterView() {
 		// Add each episode to tableView
 		var episodes = episodesList.length;
 
-                // Load module for episodeRow
-                var EpisodeRow = require('ui/common/episodeRow');
-
                 // Add episodes
 		for(var i = 0, j = episodes; i < j; i++){
-			var episode = episodesList[i];
+                    var episode = episodesList[i];
 
-                        var episodeRow = new EpisodeRow(episode);
-			table.appendRow(episodeRow);
+                    var episodeRow = new EpisodeRow(episode);
+
+                    //Ti.API.debug('Rows in table: ' + table.getRowCount() );
+                    Ti.API.debug('tell me avout table.sections');
+                    Ti.API.debug(table.sections.length);
+
+                    // when inserting first row, make sure there
+                    // is at least one row, otherwise, create first row
+                    if(table.sections.length < 1){
+                        table.appendRow(episodeRow);
+                    } else {
+                        table.insertRowBefore(0,episodeRow);
+                    };
 		};
 	}
-	
-	var table = Ti.UI.createTableView({});
-	self.add(table);
 	
 	// add behavior
 	table.addEventListener('click', function(e) {
@@ -91,6 +123,8 @@ function MasterView() {
 			episodeId: e.rowData.episodeId
 		});
 	});
+
+        loadEpisodesTable();
 	
 	return self;
 };

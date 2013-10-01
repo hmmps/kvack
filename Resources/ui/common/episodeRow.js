@@ -9,7 +9,8 @@ function EpisodeRow(episode){
     // Create the row
     var self = Ti.UI.createTableViewRow({
         className: 'episodeRow',
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
+        episodeId: episode.id
     });
 
     // Episode Title

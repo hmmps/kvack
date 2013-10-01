@@ -33,7 +33,7 @@ function Feed(){
 			
 			// On failure
 			onerror: function(e){
-				Ti.APP.fireEvent('fetchRemoteFeedFailed', e);
+				Ti.App.fireEvent('fetchRemoteFeedFailed', e);
 				Ti.API.error(e.error);
 			},
 			
@@ -80,7 +80,7 @@ function Feed(){
 	/*
 	 * Expects a timestamp
 	 * New episodes is published after the submitted timestamp
-	 * returns XML node
+	 * returns nre episodes as XML nodes in an array
 	 */
 	self.getNewEpisodes = function(newerThen){
 		
@@ -138,6 +138,11 @@ function Feed(){
 		}
 		
 		Ti.API.debug('Found ' + newEpisodes.length + ' new episodes');
+
+                // Return episodes chronologically.
+                // XMLFeed stores episodes newest -> oldest.
+                // We want to go through them oldest -> newest
+                newEpisodes.reverse();
 		
 		return newEpisodes;
 	};

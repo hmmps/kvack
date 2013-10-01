@@ -76,7 +76,7 @@ function DB(){
 		Ti.API.info('Getting episodesList');
 		
 		// Build query
-		var query = 'SELECT title,subtitle,pubDate,unheard,mediaPath FROM episodes ORDER BY pubDate';
+		var query = 'SELECT * FROM episodes ORDER BY pubDate DESC';
 		
 		var result = self.execute(query);
 		
@@ -86,6 +86,7 @@ function DB(){
 		
 			var episode = {};
 			
+                        episode.id = result.fieldByName('id');
 			episode.title = result.fieldByName('title');
 			episode.subtitle = result.fieldByName('subtitle');
 			episode.unheard = result.fieldByName('unheard');
@@ -108,6 +109,11 @@ function DB(){
 		 
 	};
 
+        self.getNewEpisodesList = function(newerThen){
+
+            Ti.API.info('Getting episodes newer then ' + newerThen);
+        }
+
         // Method to grab infor for specific episode
         self.getEpisodeWithId = function(episodeId){
 
@@ -118,12 +124,14 @@ function DB(){
 
             // Query db
             var result = self.execute(query, episodeId);
+            Ti.API.debug('query executed: ' + query);
 
             // Placeholder for episode data
             var episode = {};
 
             // Retrive episode data
             while( result.isValidRow() ){
+                Ti.API.debug('Fetching result / rowdata');
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.unheard = result.fieldByName('unheard');
@@ -132,7 +140,10 @@ function DB(){
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
                 episode.pubDate = result.fieldByName('pubDate');
+                result.next();
             };
+
+            Ti.API.debug('Returing episode with title: ' + episode.title);
 
             return episode;
         };
