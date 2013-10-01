@@ -3,3 +3,7 @@ build.log
 tmp
 ._*
 .DS_Store
+
+# Ignore VIM caches
+*.swp
+*.swo
