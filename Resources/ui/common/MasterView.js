@@ -103,10 +103,6 @@ function MasterView() {
 
                     var episodeRow = new EpisodeRow(episode);
 
-                    //Ti.API.debug('Rows in table: ' + table.getRowCount() );
-                    Ti.API.debug('tell me avout table.sections');
-                    Ti.API.debug(table.sections.length);
-
                     // when inserting first row, make sure there
                     // is at least one row, otherwise, create first row
                     if(table.sections.length < 1){
@@ -120,6 +116,7 @@ function MasterView() {
 	// add behavior
 	table.addEventListener('click', function(e) {
 		self.fireEvent('itemSelected', {
+                        title: e.rowData.episodeTitle,
 			episodeId: e.rowData.episodeId
 		});
 	});

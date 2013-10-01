@@ -26,6 +26,7 @@ function ApplicationWindow() {
 		});
 		detailContainerWindow.add(detailView);
 		detailView.fireEvent('itemSelected',e);
+                detilContainerWindow.setTitle(e.title);
 		detailContainerWindow.open();
 	});
 	

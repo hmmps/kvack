@@ -14,7 +14,7 @@ function ApplicationWindow() {
 		
 	//create master view container
 	var masterContainerWindow = Ti.UI.createWindow({
-		title:'Products'
+            title:'Kvack You!'
 	});
 	masterContainerWindow.add(masterView);
 	
@@ -33,6 +33,7 @@ function ApplicationWindow() {
 	//add behavior for master view
 	masterView.addEventListener('itemSelected', function(e) {
 		detailView.fireEvent('itemSelected',e);
+                detailContainerWindow.setTitle(e.title);
 		navGroup.open(detailContainerWindow);
 	});
 	
