@@ -13,6 +13,7 @@
  * unread: integer (1 or 0)
  * 
  */
+
 function DB(){
 	
 	// This module is a Ti.Database.DB object
@@ -43,9 +44,6 @@ function DB(){
 	// Returns ID of inserted row
 	self.saveEpisode = function(ep){
 		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
-		
-		// temp fake pubDate
-		ep.pubDate = 1234786;
 
 		// Do the actual insert	
 		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
@@ -110,6 +108,36 @@ function DB(){
 		 
 	};
 
+        // Method to grab infor for specific episode
+        self.getEpisodeWithId = function(episodeId){
+
+            Ti.API.info('Fetching episode with id: ' + episodeId);
+
+            // Build query
+            var query = 'SELECT * FROM episodes WHERE id = ? LIMIT 1';
+
+            // Query db
+            var result = self.execute(query, episodeId);
+
+            // Placeholder for episode data
+            var episode = {};
+
+            // Retrive episode data
+            while( result.isValidRow() ){
+                episode.title = result.fieldByName('title');
+                episode.subtitle = result.fieldByName('subtitle');
+                episode.unheard = result.fieldByName('unheard');
+                episode.mediaURL = result.fieldByName('mediaURL');
+                episode.identifier = result.fieldByName('identifier');
+                episode.description = result.fieldByName('description');
+                episode.notes = result.fieldByName('notes');
+                episode.pubDate = result.fieldByName('pubDate');
+            };
+
+            return episode;
+        };
+
+        // Return open DB connection as the module
 	return self;
 }
 

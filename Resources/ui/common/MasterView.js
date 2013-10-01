@@ -50,7 +50,8 @@ function MasterView() {
 		
 		Ti.App.fireEvent('episodesDbUpdated');
 	});
-// 	
+        
+        // When database is updated, refersh the episodesTable 
 	Ti.App.addEventListener('episodesDbUpdated', reloadEpisodesTable);
 	
 	function reloadEpisodesTable(){
@@ -68,15 +69,15 @@ function MasterView() {
 
 		// Add each episode to tableView
 		var episodes = episodesList.length;
+
+                // Load module for episodeRow
+                var EpisodeRow = require('ui/common/episodeRow');
+
+                // Add episodes
 		for(var i = 0, j = episodes; i < j; i++){
 			var episode = episodesList[i];
-			Ti.API.debug('Adding episode ' + episode.title + ' to tableView');
-			var episodeRow = Ti.UI.createTableViewRow({
-				className: 'episodeRow',
-				title: episode.title,
-				rowIndex: i,
-				height: Ti.UI.Size
-			});
+
+                        var episodeRow = new EpisodeRow(episode);
 			table.appendRow(episodeRow);
 		};
 	}
