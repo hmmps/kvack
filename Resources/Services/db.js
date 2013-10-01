@@ -25,7 +25,7 @@ function DB(){
 		var query = 'CREATE TABLE IF NOT EXISTS episodes (';
 		query += ' id integer primary key autoincrement';
 		query += ', title text';
-		query += ', pubDate integer';
+		query += ', pubDate text';
 		query += ', subtitle text';
 		query += ', description text';
 		query += ', notes text';
@@ -35,8 +35,6 @@ function DB(){
 		query += ', unheard integer';
 		query += ')';
 		
-		Ti.API.debug('Creating table episodes if not exists');
-		
 		self.execute(query);
 	})();
 	
@@ -45,35 +43,40 @@ function DB(){
 	self.saveEpisode = function(ep){
 		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
 
+                Ti.API.debug('Saving episode with title ' + ep.title + ' and pubDate ' + ep.pubDate);
+
 		// Do the actual insert	
 		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
-		Ti.API.debug(ep.title + ' saved localy');
 		
 		return self.lastInsertRowId;
 	};
 	
 	self.getLatestUpdate = function(){
 		
-		var query = 'SELECT MAX(pubDate) FROM episodes LIMIT 1';
+		var query = 'SELECT MAX(pubDate) AS latest FROM episodes LIMIT 1';
 		
 		var result = self.execute(query);
 		
 		// container for latestUpdate;
-		var latestUpdate;
+		var latestUpdate = 0;
 		
 		if(result.isValidRow() ){
-			latestUpdate = 0;
-		} else {
-			latestUpdate = result.fieldByName('pubDate');
-		}
-		
+                    latestUpdate = result.fieldByName('latest');
+                } else {
+                    Ti.API.error('Found no latest episodes');
+                };
+
+                // If we have no saved episodes, query returns a valid result
+                // but the result is set to null, so set to 0
+                if( null == latestUpdate ){
+                    latestUpdate = 0;
+                }
+
 		return latestUpdate;
 	};
 
 	// Method to get data for the main tableView
 	self.getEpisodesList = function(){
-		
-		Ti.API.info('Getting episodesList');
 		
 		// Build query
 		var query = 'SELECT * FROM episodes ORDER BY pubDate DESC';
@@ -91,47 +94,74 @@ function DB(){
 			episode.subtitle = result.fieldByName('subtitle');
 			episode.unheard = result.fieldByName('unheard');
 			episode.mediaPath = result.fieldByName('mediaPath');
+			episode.pubDate = result.fieldByName('pubDate');
 			
-			// Date requires formatting
-			var timestamp = new Date(result.fieldByName('pubDate'));
-			var pubDate = timestamp.getDate();
-			pubDate += '/' + timestamp.getMonth();
-			pubDate += ' ' + timestamp.getFullYear();
-			episode.pubDate = pubDate;
-			
+                        // Add episode to episodesList
 			episodesList.push(episode);
 			
 			// Don't forget to go to next episode...
 			result.next();
 		}
-		
+
+                // close resultset
+                result.close();
+
+                // Return an array of episodes as objects
 		return episodesList;
-		 
 	};
 
         self.getNewEpisodesList = function(newerThen){
 
-            Ti.API.info('Getting episodes newer then ' + newerThen);
+            Ti.API.debug('Getting episodes newer then ' + newerThen);
+
+            // Find episodes newer then submitted timestamp
+            var query = 'SELECT * FROM episodes WHERE pubDate > ?';
+            var result = self.execute(query, newerThen);
+
+            // Create a placeholder for new episodes
+            var newEpisodesList = [];
+
+            while( result.isValidRow() ){
+                var episode = {};
+
+                episode.id = result.fieldByName('id');
+                episode.title = result.fieldByName('title');
+                episode.subtitle = result.fieldByName('subtitle');
+                episode.unheard = result.fieldByName('unheard');
+                episode.mediaPath = result.fieldByName('mediaPath');
+                episode.mediaURL = result.fieldByName('mediaURL');
+                episode.pubDate = result.fieldByName('pubDate');
+
+                // Add episode to newEpisodesList
+                newEpisodesList.push(episode);
+
+                Ti.API.debug(episode.pubDate + ' newer then ' + newerThen);
+
+                // Skip to next result (row...)
+                result.next();
+            }
+
+            // Close resultset
+            result.close();
+
+            // Return an array of new Episodes as objects
+            return newEpisodesList;
         }
 
-        // Method to grab infor for specific episode
+        // Method to grab specific episode
         self.getEpisodeWithId = function(episodeId){
-
-            Ti.API.info('Fetching episode with id: ' + episodeId);
 
             // Build query
             var query = 'SELECT * FROM episodes WHERE id = ? LIMIT 1';
 
             // Query db
             var result = self.execute(query, episodeId);
-            Ti.API.debug('query executed: ' + query);
 
             // Placeholder for episode data
             var episode = {};
 
             // Retrive episode data
             while( result.isValidRow() ){
-                Ti.API.debug('Fetching result / rowdata');
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.unheard = result.fieldByName('unheard');
@@ -142,8 +172,6 @@ function DB(){
                 episode.pubDate = result.fieldByName('pubDate');
                 result.next();
             };
-
-            Ti.API.debug('Returing episode with title: ' + episode.title);
 
             return episode;
         };

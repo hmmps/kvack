@@ -8,8 +8,6 @@ function Feed(){
 
     self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
-    self.fetchedXML = 'asdg,jhgadfliugasdf';
-
     // Fetch remote feed
     self.fetchRemoteFeed = function(){
 
@@ -26,7 +24,6 @@ function Feed(){
                     Ti.API.info('RemoteFeed fetched');
                 }
 
-                Ti.API.debug( self.fetchedXML);
                 var feedTitle = self.fetchedXML.getElementsByTagName('title').item(0).textContent;
             },
 
@@ -42,11 +39,11 @@ function Feed(){
 
         // Open request
         client.open("GET", self.remoteURL);
-        Ti.API.debug('Opening HTTP CLient');
+        Ti.API.info('Opening HTTP CLient');
 
         // Send request
         client.send();
-        Ti.API.debug('HTTP CLient request sent');
+        Ti.API.info('HTTP CLient request sent');
     };
 
     self.getFeedInfo = function(){
@@ -72,19 +69,20 @@ function Feed(){
         feedInfo.title = FeedTitles[0].trim;
         feedInfo.subtitle = FeedTitles[1].trim;
 
-        feedInfo.lastBuildDate = new Date(xml.getElementsByTagName('lastBuildDate').item(0).textContent);
+        feedInfo.lastBuildDate = Date.parse(xml.getElementsByTagName('lastBuildDate').item(0).textContent);
 
     };
 
     /*
-     * Expects a timestamp
+     * getNewEpisodes expects a timestamp
      * New episodes is published after the submitted timestamp
-     * returns nre episodes as XML nodes in an array
+     * returns episodes as XML nodes in an array
      */
     self.getNewEpisodes = function(newerThen){
 
         // Make sure we have a timestamp to compare to
-        if(null == newerThen || newerThen == ''){
+        if( null == newerThen ){
+            Ti.API.error('Feed.getNewEpisodes recieved newerThen containing: ' + newerThen);
             newerThen = 0;
         };
 
@@ -96,13 +94,9 @@ function Feed(){
         if(null == xml){
             Ti.API.error('No fetchedXML accessible');
             return false;
-        } else {
-            Ti.API.debug('fetchedXML is not null');
-        };
+        }
 
         var allItems = xml.getElementsByTagName('item');
-
-        Ti.API.debug(allItems.length + ' episodes in feed');
 
         for(var i = 0, j = allItems.length; i < j; i++){
 
@@ -110,33 +104,32 @@ function Feed(){
             var item = allItems.item(i);
 
             // skip items without enclosures
+            // they contain no mediafiles
             if(null == item.getElementsByTagName('enclosure')){
-                Ti.API.debug('Skipping item ' + i);
+                Ti.API.debug('Skipping item ' + i + ' for lack of enclosure');
                 continue;
             }
 
             // Also skip items without Avsnitt eller Kvacksnack in the title
             var title = item.getElementsByTagName('title').item(0).textContent;
-            if( title.match(/Avsnitt/) ){
-                Ti.API.debug('Title contains Avsnitt');
-            } else if( title.match(/Kvacksnack/) ){
-                Ti.API.debug('Title contains Kvacksnack');
-            } else {
+            if( null == title.match(/Avsnitt/) && null == title.match(/Kvacksnack/) ) {
                 // Skip to next item
-                Ti.API.debug('Skipping item titled ' + title);
+                Ti.API.debug('Skipping item with index ' + i + ' for lacking Avsnitt or Kvacksnack in title');
                 continue;				
             }
 
             var pubDate = item.getElementsByTagName('pubDate').item(0).textContent;
-            pubDate = new Date(pubDate);
-            if(pubDate > newerThen){
+            pubDateTimeStamp = Date.parse(pubDate);
+            if(pubDateTimeStamp > newerThen){
+                Ti.API.debug(pubDateTimeStamp + ' newer then ' + newerThen + ', adding to newEpisodes');
                 newEpisodes.push(item);	
             } else {
+                Ti.API.debug(pubDateTimeStamp + ' less then ' + newerThen + ', skipping');
                 break;
             }
         }
 
-        Ti.API.debug('Found ' + newEpisodes.length + ' new episodes');
+        Ti.API.info('Found ' + newEpisodes.length + ' new episodes in feed');
 
         // Return episodes chronologically.
         // XMLFeed stores episodes newest -> oldest.
