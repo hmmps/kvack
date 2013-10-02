@@ -6,7 +6,7 @@ function Feed(){
 
     var self = this;
 
-    self.remoteURL = 'http://skenkonst.se/newKvack.xml';
+self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
     // Fetch remote feed
     self.fetchRemoteFeed = function(){
@@ -160,6 +160,7 @@ function Feed(){
         episode.notes = xmlNode.getElementsByTagName('content:encoded').item(0).textContent;
         // episode.mediaURL = xmlNode.getElementsByTagName('enclusure').item(0).getAttributeNode('url').value;
         episode.identifier = xmlNode.getElementsByTagName('guid').item(0).textContent;
+        episode.mediaURL = xmlNode.getElementsByTagName('enclosure').item(0).getAttributeNode('url').value;
 
         return episode;
     };

@@ -17,13 +17,13 @@ function EpisodeRow(episode){
     // Episode Title
     var episodeTitle = Ti.UI.createLabel({
         text: episode.title,
-        color: '#787878',
+        color: '#bbbbbb',
         textAlign: 'left',
         top: '8dp',
         left: '12dp',
         font:{
-            fontFamily: 'HelveticaNeue',
-            fontSize: '12ps'
+            fontFamily: 'HelveticaNeue-CondensedBold',
+            fontSize: '11ps'
         }
     });
     self.add(episodeTitle);

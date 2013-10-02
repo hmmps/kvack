@@ -43,8 +43,6 @@ function DB(){
 	self.saveEpisode = function(ep){
 		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
 
-                Ti.API.debug('Saving episode with title ' + ep.title + ' and pubDate ' + ep.pubDate);
-
 		// Do the actual insert	
 		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
 		
@@ -112,8 +110,6 @@ function DB(){
 
         self.getNewEpisodesList = function(newerThen){
 
-            Ti.API.debug('Getting episodes newer then ' + newerThen);
-
             // Find episodes newer then submitted timestamp
             var query = 'SELECT * FROM episodes WHERE pubDate > ?';
             var result = self.execute(query, newerThen);
@@ -134,8 +130,6 @@ function DB(){
 
                 // Add episode to newEpisodesList
                 newEpisodesList.push(episode);
-
-                Ti.API.debug(episode.pubDate + ' newer then ' + newerThen);
 
                 // Skip to next result (row...)
                 result.next();
