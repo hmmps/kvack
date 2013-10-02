@@ -46,10 +46,14 @@ function DetailView() {
 
         // Update detailview with info from db
         self.updateView();
+        Ti.API.debug('Update detailView');
     });
 
 
     self.updateView = function(){
+
+        // Clear out childviews
+        self.removeAllChildren();
 
         // Make sure we have episode info
         if( null == episode ){
