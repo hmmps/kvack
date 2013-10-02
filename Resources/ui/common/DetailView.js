@@ -30,8 +30,32 @@ function DetailView() {
     // load Db module
     var EpisodesDb = require('Services/db');
 
+    // Add subtitle to detailsView
+    var subtitle = Ti.UI.createLabel({
+        text: 'Episode subtitle',
+        height:'auto',
+        width:'auto',
+        color:'#000',
+        font:{
+            fontFamily: 'HelveticaNeue-Condensed',
+            fontSize: '24ps'
+        }
+    });
+    self.add(subtitle);
+
     // load mediaplayer module
-    var MediaPlayer = require('ui/common/mediaPlayer');
+    var MediaPlayerView = require('ui/common/mediaPlayerView');
+
+    // Add media player to detailsView
+    var mediaPlayerView = new MediaPlayerView();
+    self.add(mediaPlayerView);
+
+    // Add view for episode details
+    var showNotes = Ti.UI.createWebView({
+        html: '<p>No show selected</p>'
+    });
+    self.add(showNotes);
+
 
     self.addEventListener('itemSelected', function(e) {
 
@@ -52,9 +76,6 @@ function DetailView() {
 
     self.updateView = function(){
 
-        // Clear out childviews
-        self.removeAllChildren();
-
         // Make sure we have episode info
         if( null == episode ){
             Ti.API.error('No episode loaded');
@@ -72,32 +93,11 @@ function DetailView() {
             Ti.API.error('Recieved neither mediaPath nor mediaURL from Db');
         };
 
-        // Add subtitle to detailsView
-        var subtitle = Ti.UI.createLabel({
-            text: episode.subtitle,
-            height:'auto',
-            width:'auto',
-            color:'#000',
-            font:{
-                fontFamily: 'HelveticaNeue-Condensed',
-                fontSize: '24ps'
-            }
-        });
-        self.add(subtitle);
-        Ti.API.debug('Subtitle added');
+        // Update data in Childviews
+        subtitle.text = episode.subtitle;
+        mediaPlayerView.setMediaPath(mediaLocation);
+        showNotes.setHtml(episode.notes);
 
-        // Add media player to detailsView
-        var mediaPlayer = new MediaPlayer(mediaLocation);
-        self.add(mediaPlayer);
-        Ti.API.debug('Mediaplayer added');
-
-        // Add view for episode details
-        var showNotes = Ti.UI.createWebView({
-            html: episode.notes
-        });
-        self.add(showNotes);
-
-        Ti.API.debug('DetailsView added with contents: ' + episode.notes);
     };
 
 

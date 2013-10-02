@@ -120,7 +120,7 @@ function MasterView() {
         // Add each episode to tableView
         var episodes = newEpisodesList.length;
 
-        Ti.API.debug(episodes + ' to add to tableView');
+        Ti.API.debug('MasterView.js:123 | ' + episodes + ' episodes to add to tableView');
 
         // Add episodes
         for(var i = 0, j = episodes; i < j; i++){

@@ -6,12 +6,7 @@
  * media or locally downloaded media.
  */
 
-var MediaPlayerView = function(url){
-
-    // Make sure mediaplayer recieved a url
-    if( url == undefined ){
-        Ti.API.error('Mediaplayer recieved no url');
-    }
+var MediaPlayerView = function(){
 
 
     // Create the containing mediaPlayer view
@@ -46,7 +41,7 @@ var MediaPlayerView = function(url){
             // start playing, and add stop button
             mediaPlayer.play();
             playPauseButton.image = '/images/Pause.png';
-            Ti.API.debug('Pressed play');
+            Ti.API.debug('mediaPlayerView:44 | started playing media at: ' + mediaPlayer.url);
 
             // And add the stop button
             var stopButton = Ti.UI.createImageView({
@@ -72,19 +67,24 @@ var MediaPlayerView = function(url){
         }
     });
 
-
     // Create the player
     var mediaPlayer = Ti.Media.createAudioPlayer({
-        allowBackground: true,
-        url: url
+        allowBackground: true
     });
+
+    // Function to update mediaPath for audioPlayer
+    self.setMediaPath = function(mediaURL){
+        if(mediaPlayer == undefined){
+            Ti.API.error('No media player defined');
+        }
+        mediaPlayer.setUrl(mediaURL);
+    };
+
 
     // Add events to track progress
     mediaPlayer.addEventListener('progress', function(e){
-        Ti.API.info('Time played: ' + Math.round(e.progress) + ' ms');
+        Ti.API.debug('Time played: ' + Math.round(e.progress) + ' ms');
     });
-
-    Ti.API.info('Media at ' + url);
 
     return self;
 };
