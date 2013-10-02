@@ -155,7 +155,9 @@ function DB(){
             var episode = {};
 
             // Retrive episode data
-            while( result.isValidRow() ){
+            if( result.isValidRow() ){
+
+                // Add result to episode object
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.unheard = result.fieldByName('unheard');
@@ -164,9 +166,9 @@ function DB(){
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
                 episode.pubDate = result.fieldByName('pubDate');
-                result.next();
             };
 
+            // Return episode as an object
             return episode;
         };
 

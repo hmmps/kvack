@@ -16,27 +16,62 @@ var MediaPlayerView = function(url){
 
     // Create the containing mediaPlayer view
     var self = Ti.UI.createView({
-        layout: 'vertical'
+        layout: 'horizontal',
+        height: '64dp'
     });
 
     // Play / Pause
-    var playPauseButton = Ti.UI.createButton({
-        title: 'play / Pause'
+    var playPauseButton = Ti.UI.createImageView({
+        image: '/images/Play.png'
     });
     self.add(playPauseButton);
 
     // Add actions to playPauseButton
     playPauseButton.addEventListener('click', function(){
 
-        // if playing pause, else play
         if(mediaPlayer.playing){
+            // if playing pause
             mediaPlayer.pause();
+            playPauseButton.image = '/images/Play.png';
             Ti.API.debug('Pressed pause');
-        } else {
+        } else if(mediaPlayer.paused){
+            // If paused, play
             mediaPlayer.play();
+            playPauseButton.image = '/images/Pause.png';
             Ti.API.debug('Pressed play');
+
+        } else {
+
+            // If neither playing, nor paused,
+            // start playing, and add stop button
+            mediaPlayer.play();
+            playPauseButton.image = '/images/Pause.png';
+            Ti.API.debug('Pressed play');
+
+            // And add the stop button
+            var stopButton = Ti.UI.createImageView({
+                image: '/images/Stop.png'
+            });
+            self.add(stopButton);
+
+            // Add action to stopButton
+            stopButton.addEventListener('click', function(){
+                mediaPlayer.stop();
+                playPauseButton.image = '/images/Play.png';
+
+                // If on android, audioPlayer needs to be released
+                if( Ti.Platform.name == 'android' ){
+                    mediaPlayer.release();
+                }
+
+                // We can only stop if playing,
+                // so remove the stopbutton
+                self.remove(stopButton);
+            });
+
         }
     });
+
 
     // Create the player
     var mediaPlayer = Ti.Media.createAudioPlayer({

@@ -27,20 +27,6 @@ function DetailView() {
         layout: 'vertical'
     });
 
-    var lbl = Ti.UI.createLabel({
-        text:'No mediaLocation',
-        height:'auto',
-        width:'auto',
-        color:'#000'
-    });
-    self.add(lbl);
-
-    // Tell me if I am streaming or playing downloaded episode
-    var mediaLocationLabel = Ti.UI.createLabel({
-        text: 'unknown'
-    });
-    self.add(mediaLocationLabel);
-
     // load Db module
     var EpisodesDb = require('Services/db');
 
@@ -71,27 +57,43 @@ function DetailView() {
             return;
         }
 
-        Ti.API.debug(JSON.stringify(episode));
-
         // Check if we are playing local or remote media
         var mediaLocation;
         if( episode.mediaPath != undefined ){
             mediaLocation = episode.mediaPath;
-            mediaLocationLabel.text = 'local media';
         } else if( episode.mediaURL != undefined ){
             mediaLocation = episode.mediaURL;
-            mediaLocationLabel.text = 'remote media';
         } else {
             // We have an error!
             Ti.API.error('Recieved neither mediaPath nor mediaURL from Db');
         };
 
-        // Add media player to view
+        // Add subtitle to detailsView
+        var subtitle = Ti.UI.createLabel({
+            text: episode.subtitle,
+            height:'auto',
+            width:'auto',
+            color:'#000',
+            font:{
+                fontFamily: 'HelveticaNeue-Condensed',
+                fontSize: '24ps'
+            }
+        });
+        self.add(subtitle);
+        Ti.API.debug('Subtitle added');
+
+        // Add media player to detailsView
         var mediaPlayer = new MediaPlayer(mediaLocation);
         self.add(mediaPlayer);
+        Ti.API.debug('Mediaplayer added');
 
-        // Set title label
-        lbl.text = mediaLocation;
+        // Add view for episode details
+        var showNotes = Ti.UI.createWebView({
+            html: episode.notes
+        });
+        self.add(showNotes);
+
+        Ti.API.debug('DetailsView added with contents: ' + episode.notes);
     };
 
 
