@@ -23,7 +23,7 @@ function EpisodeRow(episode){
         left: '12dp',
         font:{
             fontFamily: 'HelveticaNeue-CondensedBold',
-            fontSize: '11ps'
+            fontSize: '11sp'
         }
     });
     self.add(episodeTitle);
@@ -36,7 +36,7 @@ function EpisodeRow(episode){
         left: '12dp',
         font: {
             fontFamily: 'HelveticaNeue-Light',
-            fontSize: '16dp'
+            fontSize: '16sp'
         },
         bottom: '8dp'
     });

@@ -38,7 +38,7 @@ function DetailView() {
         color:'#000',
         font:{
             fontFamily: 'HelveticaNeue-Condensed',
-            fontSize: '24ps'
+            fontSize: '24sp'
         }
     });
     self.add(subtitle);
