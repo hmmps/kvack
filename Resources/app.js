@@ -1,6 +1,8 @@
 /*
-* A master detail view, utilizing a native table view component and platform-specific UI and navigation. 
-* A starting point for a navigation-based application with hierarchical data, or a stack of windows. 
+* A master detail view, utilizing a native table view component and
+* platform-specific UI and navigation. 
+* A starting point for a navigation-based application with hierarchical
+* data, or a stack of windows. 
 * Requires Titanium Mobile SDK 1.8.0+.
 * 
 * In app.js, we generally take care of a few things:
@@ -12,7 +14,8 @@
 
 //bootstrap and check dependencies
 if (Ti.version < 1.8 ) {
-	alert('Sorry - this application template requires Titanium Mobile SDK 1.8 or later');	  	
+	alert('Sorry - this application template requires Titanium Mobile'
+                + ' SDK 1.8 or later');	  	
 }
 
 // This is a single context application with mutliple windows in a stack
@@ -23,16 +26,22 @@ if (Ti.version < 1.8 ) {
 		height = Ti.Platform.displayCaps.platformHeight,
 		width = Ti.Platform.displayCaps.platformWidth;
 	
-	//considering tablet to have one dimension over 900px - this is imperfect, so you should feel free to decide
-	//yourself what you consider a tablet form factor for android
-	var isTablet = osname === 'ipad' || (osname === 'android' && (width > 899 || height > 899));
+	// considering tablet to have one dimension over 900px
+        // - this is imperfect, so you should feel free to decide
+	// yourself what you consider a tablet form factor for android
+	var isTablet = osname === 'ipad' ||
+                        (
+                            osname === 'android' &&
+                            (width > 899 || height > 899)
+                        );
 	
 	var Window;
 	if (isTablet) {
 		Window = require('ui/tablet/ApplicationWindow');
 	}
 	else {
-		// iPhone and Mobile Web make use of the platform-specific navigation controller,
+		// iPhone and Mobile Web make use of the platform-specific
+                // navigation controller,
 		// all other platforms follow a similar UI pattern
 		if (osname === 'iphone') {
 			Window = require('ui/handheld/ios/ApplicationWindow');

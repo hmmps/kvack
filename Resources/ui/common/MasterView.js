@@ -88,7 +88,8 @@ function MasterView() {
             // MasteView.newstEpisodeTimestamp
             if(i == 0){
                 self.newestEpisodeTimestamp = episode.pubDate;
-                Ti.API.debug('Setting masterView.newestEpisodeTimestamp to ' + self.newestEpisodeTimestamp);
+                Ti.API.debug('Setting masterView.newestEpisodeTimestamp to '
+                        + self.newestEpisodeTimestamp);
             }
         };
     };
@@ -120,7 +121,9 @@ function MasterView() {
         // Add each episode to tableView
         var episodes = newEpisodesList.length;
 
-        Ti.API.debug('MasterView.js:123 | ' + episodes + ' episodes to add to tableView');
+        Ti.API.debug('MasterView.js:123 | '
+                + episodes
+                + ' episodes to add to tableView');
 
         // Add episodes
         for(var i = 0, j = episodes; i < j; i++){

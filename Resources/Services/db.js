@@ -17,23 +17,23 @@
 function DB(){
 	
 	// This module is a Ti.Database.DB object
-	// Must remember to close DB after use
+	// Remember to close DB after use
 	var self = Ti.Database.open('episodes');
 	
 	// Make sure we have the episodes table
 	(function (){
-		var query = 'CREATE TABLE IF NOT EXISTS episodes (';
-		query += ' id integer primary key autoincrement';
-		query += ', title text';
-		query += ', pubDate text';
-		query += ', subtitle text';
-		query += ', description text';
-		query += ', notes text';
-		query += ', mediaURL text';
-		query += ', mediaPath text';
-		query += ', identifier text unique';
-		query += ', playStatus integer';
-		query += ')';
+		var query = 'CREATE TABLE IF NOT EXISTS episodes ('
+                    + ' id integer primary key autoincrement'
+                    + ', title text'
+                    + ', pubDate text'
+                    + ', subtitle text'
+                    + ', description text'
+                    + ', notes text'
+                    + ', mediaURL text'
+                    + ', mediaPath text'
+                    + ', identifier text unique'
+                    + ', playStatus integer'
+                    + ')';
 		
 		self.execute(query);
 	})();
@@ -41,10 +41,29 @@ function DB(){
 	// Expects an object with episode Details
 	// Returns ID of inserted row
 	self.saveEpisode = function(ep){
-		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, playStatus) VALUES (?,?,?,?,?,?,?,?)';
+                
+                // Build query
+		var query = 'INSERT OR IGNORE INTO episodes ('
+                    + 'title' 
+                    + ', pubDate'
+                    + ', subtitle'
+                    + ', description'
+                    + ', notes'
+                    + ', mediaURL'
+                    + ', identifier'
+                    + ', playStatus'
+                    + ') VALUES (?,?,?,?,?,?,?,?)';
 
 		// Do the actual insert	
-		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.playStatus);
+		self.execute( query,
+                        ep.title,
+                        ep.pubDate,
+                        ep.subtitle,
+                        ep.description,
+                        ep.notes, ep.mediaURL,
+                        ep.identifier,
+                        ep.playStatus
+                    );
 		
 		return self.lastInsertRowId;
 	};

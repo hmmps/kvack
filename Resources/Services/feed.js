@@ -62,7 +62,8 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
         // grab feed title for further parsing
         var titleText = xml.getElementsByTagName('title').item(0).textContent;
 
-        // title and subtitle mostly single string separated by a 'ndash', unicode is '\u2013'
+        // title and subtitle mostly single string separated by a 'ndash',
+        // unicode for ndash is '\u2013'
         var FeedTitles = titleText.split(/\u2013/);
 
         // Add title and subtitle to feedInfo object
@@ -114,17 +115,25 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             var title = item.getElementsByTagName('title').item(0).textContent;
             if( null == title.match(/Avsnitt/) && null == title.match(/Kvacksnack/) ) {
                 // Skip to next item
-                Ti.API.debug('Skipping item with index ' + i + ' for lacking Avsnitt or Kvacksnack in title');
+                Ti.API.debug('Skipping item with index ' + i
+                        + ' for lacking Avsnitt or Kvacksnack in title');
                 continue;				
             }
 
             var pubDate = item.getElementsByTagName('pubDate').item(0).textContent;
             pubDateTimeStamp = Date.parse(pubDate);
             if(pubDateTimeStamp > newerThen){
-                Ti.API.debug(pubDateTimeStamp + ' newer then ' + newerThen + ', adding to newEpisodes');
+
+                Ti.API.debug(pubDateTimeStamp
+                        + ' newer then '
+                        + newerThen
+                        + ', adding to newEpisodes');
+
                 newEpisodes.push(item);	
             } else {
-                Ti.API.debug(pubDateTimeStamp + ' less then ' + newerThen + ', skipping');
+                Ti.API.debug(
+                        pubDateTimeStamp + ' is less then '
+                        + newerThen + ', skipping');
                 break;
             }
         }
