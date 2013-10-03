@@ -15,7 +15,7 @@ function DetailView() {
      * - Description
      * 
      * - Status
-     *   - heard / unheard
+     *   - played / unplayed
      *   - downloaded / not downloaded
      */
 

@@ -32,7 +32,7 @@ function DB(){
 		query += ', mediaURL text';
 		query += ', mediaPath text';
 		query += ', identifier text unique';
-		query += ', unheard integer';
+		query += ', playStatus integer';
 		query += ')';
 		
 		self.execute(query);
@@ -41,10 +41,10 @@ function DB(){
 	// Expects an object with episode Details
 	// Returns ID of inserted row
 	self.saveEpisode = function(ep){
-		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, unheard) VALUES (?,?,?,?,?,?,?,?)';
+		var query = 'INSERT OR IGNORE INTO episodes (title, pubDate, subtitle, description, notes, mediaURL, identifier, playStatus) VALUES (?,?,?,?,?,?,?,?)';
 
 		// Do the actual insert	
-		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.unheard);
+		self.execute(query, ep.title, ep.pubDate, ep.subtitle, ep.description, ep.notes, ep.mediaURL, ep.identifier, ep.playStatus);
 		
 		return self.lastInsertRowId;
 	};
@@ -90,7 +90,7 @@ function DB(){
                         episode.id = result.fieldByName('id');
 			episode.title = result.fieldByName('title');
 			episode.subtitle = result.fieldByName('subtitle');
-			episode.unheard = result.fieldByName('unheard');
+			episode.playStatus = result.fieldByName('playStatus');
 			episode.mediaPath = result.fieldByName('mediaPath');
 			episode.pubDate = result.fieldByName('pubDate');
 			
@@ -123,7 +123,7 @@ function DB(){
                 episode.id = result.fieldByName('id');
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
-                episode.unheard = result.fieldByName('unheard');
+                episode.playStatus = result.fieldByName('playStatus');
                 episode.mediaPath = result.fieldByName('mediaPath');
                 episode.mediaURL = result.fieldByName('mediaURL');
                 episode.pubDate = result.fieldByName('pubDate');
@@ -160,7 +160,7 @@ function DB(){
                 // Add result to episode object
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
-                episode.unheard = result.fieldByName('unheard');
+                episode.playStatus = result.fieldByName('playStatus');
                 episode.mediaURL = result.fieldByName('mediaURL');
                 episode.identifier = result.fieldByName('identifier');
                 episode.description = result.fieldByName('description');

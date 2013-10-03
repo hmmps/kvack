@@ -15,11 +15,17 @@ var MediaPlayerView = function(){
         height: '64dp'
     });
 
+    // Create view to contain playback buttons
+    var playbackButtonsView = Ti.UI.createView({
+        layout: 'vertical'
+    });
+    self.add(playbackButtonsView);
+
     // Play / Pause
     var playPauseButton = Ti.UI.createImageView({
         image: '/images/Play.png'
     });
-    self.add(playPauseButton);
+    playbackButtonsView.add(playPauseButton);
 
     // Add actions to playPauseButton
     playPauseButton.addEventListener('click', function(){
@@ -41,7 +47,8 @@ var MediaPlayerView = function(){
             // start playing, and add stop button
             mediaPlayer.play();
             playPauseButton.image = '/images/Pause.png';
-            Ti.API.debug('mediaPlayerView:44 | started playing media at: ' + mediaPlayer.url);
+            Ti.API.debug('mediaPlayerView.js:44 | started playing media at: '
+                + mediaPlayer.url);
 
             // And add the stop button
             var stopButton = Ti.UI.createImageView({
@@ -66,6 +73,9 @@ var MediaPlayerView = function(){
 
         }
     });
+
+    // Add audio progressbar
+    var progressBar = Ti.UI.create
 
     // Create the player
     var mediaPlayer = Ti.Media.createAudioPlayer({
