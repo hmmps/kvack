@@ -16,9 +16,6 @@ function MasterView() {
     // Load episodeRow module
     var EpisodeRow = require('ui/common/episodeRow');
 
-    // Load module for episodeRow
-    var EpisodeRow = require('ui/common/episodeRow');
-
     // Create container for episodes
     var episodesList = [];
 
@@ -37,9 +34,9 @@ function MasterView() {
         var latestUpdate = episodes.getLatestUpdate();
 
         // Make sure we have a latest episode
-        if( null == latestUpdate ){
+        if( null === latestUpdate ){
             Ti.API.error('latestUpdate is null!');
-        };
+        }
 
         // get the new episodes
         Ti.API.info('Getting new episodes fom Feed');
@@ -86,13 +83,13 @@ function MasterView() {
             // We need to remember which is the newest episode in the table,
             // and the newest episodes comes first, so save the time to
             // MasteView.newstEpisodeTimestamp
-            if(i == 0){
+            if(i === 0){
                 self.newestEpisodeTimestamp = episode.pubDate;
-                Ti.API.debug('Setting masterView.newestEpisodeTimestamp to '
-                        + self.newestEpisodeTimestamp);
+                Ti.API.debug('Setting masterView.newestEpisodeTimestamp to ' +
+                        self.newestEpisodeTimestamp);
             }
-        };
-    };
+        }
+    }
 
     function addNewEpisodesToTable(){
 
@@ -103,27 +100,24 @@ function MasterView() {
         // If we have a value in masterView.newestEpisodeTimestamp
         // we have a useful time, otherwise set to 0 and load all episodes as new.
         var newerThen;
-        if(null == self.newestEpisodeTimestamp){
+        if(null === self.newestEpisodeTimestamp){
             newerThen = 0;
         } else {
             newerThen = self.newestEpisodeTimestamp;
         }
 
-        Ti.API.debug('newerThen set to ' + newerThen);
-
-
         // Fetch new episodes from db
         // Db.getEpisodesList returns an array with objects
-        var episodes = new EpisodesDb();
-        var newEpisodesList = episodes.getNewEpisodesList(newerThen);
-        episodes.close();
+        var episodesDb = new EpisodesDb();
+        var newEpisodesList = episodesDb.getNewEpisodesList(newerThen);
+        episodesDb.close();
 
         // Add each episode to tableView
         var episodes = newEpisodesList.length;
 
-        Ti.API.debug('MasterView.js:123 | '
-                + episodes
-                + ' episodes to add to tableView');
+        Ti.API.debug('MasterView.js:123 | ' +
+                episodes +
+                ' episodes to add to tableView');
 
         // Add episodes
         for(var i = 0, j = episodes; i < j; i++){
@@ -137,9 +131,9 @@ function MasterView() {
                 table.appendRow(episodeRow);
             } else {
                 table.insertRowBefore(0,episodeRow);
-            };
-        };
-    };
+            }
+        }
+    }
 
     // add behavior
     table.addEventListener('click', function(e) {
@@ -153,6 +147,6 @@ function MasterView() {
     addEpisodesToTable();
 
     return self;
-};
+}
 
 module.exports = MasterView;

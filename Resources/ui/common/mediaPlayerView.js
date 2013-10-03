@@ -47,8 +47,8 @@ var MediaPlayerView = function(){
             // start playing, and add stop button
             mediaPlayer.play();
             playPauseButton.image = '/images/Pause.png';
-            Ti.API.debug('mediaPlayerView.js:44 | started playing media at: '
-                + mediaPlayer.url);
+            Ti.API.debug('mediaPlayerView.js:44 | started playing media at: ' + 
+                mediaPlayer.url);
 
             // And add the stop button
             var stopButton = Ti.UI.createImageView({
@@ -75,7 +75,7 @@ var MediaPlayerView = function(){
     });
 
     // Add audio progressbar
-    var progressBar = Ti.UI.create
+    var progressBar = Ti.UI.create;
 
     // Create the player
     var mediaPlayer = Ti.Media.createAudioPlayer({

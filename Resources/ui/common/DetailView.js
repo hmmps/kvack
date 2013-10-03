@@ -4,7 +4,7 @@ function DetailView() {
      * Views to be contained in DetailView
      * - Mediaplayer (Load as module)
      *   - Buttons
-     *      - Play / Pause
+     *      - Play / Pause;
      *   - Time
      *      - Elapsed time
      *      - Timelinescrubber
@@ -77,7 +77,7 @@ function DetailView() {
     self.updateView = function(){
 
         // Make sure we have episode info
-        if( null == episode ){
+        if( null === episode ){
             Ti.API.error('No episode loaded');
             return;
         }
@@ -91,7 +91,7 @@ function DetailView() {
         } else {
             // We have an error!
             Ti.API.error('Recieved neither mediaPath nor mediaURL from Db');
-        };
+        }
 
         // Update data in Childviews
         subtitle.text = episode.subtitle;
@@ -102,6 +102,6 @@ function DetailView() {
 
 
     return self;
-};
+}
 
 module.exports = DetailView;

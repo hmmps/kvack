@@ -17,7 +17,7 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             // On success
             onload: function(e){
                 self.fetchedXML = this.responseXML;
-                if(null == self.fetchedXML){
+                if(null === self.fetchedXML){
                     Ti.API.error('fetched XML is null');
                 } else {
                     Ti.App.fireEvent('fetchRemoteFeedFinished');
@@ -50,7 +50,7 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
         var xml;
 
-        if(null == self.fetchedXML){ 
+        if(null === self.fetchedXML){ 
             Ti.API.error("fetchedXML is empty");
             return false;
         } else {
@@ -72,6 +72,7 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
         feedInfo.lastBuildDate = Date.parse(xml.getElementsByTagName('lastBuildDate').item(0).textContent);
 
+        return feedInfo;
     };
 
     /*
@@ -82,17 +83,17 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
     self.getNewEpisodes = function(newerThen){
 
         // Make sure we have a timestamp to compare to
-        if( null == newerThen ){
+        if( null === newerThen ){
             Ti.API.error('Feed.getNewEpisodes recieved newerThen containing: ' + newerThen);
             newerThen = 0;
-        };
+        }
 
         var xml = self.fetchedXML;
 
         // Array for episodes
         var newEpisodes = [];
 
-        if(null == xml){
+        if(null === xml){
             Ti.API.error('No fetchedXML accessible');
             return false;
         }
@@ -106,17 +107,17 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
             // skip items without enclosures
             // they contain no mediafiles
-            if(null == item.getElementsByTagName('enclosure')){
+            if(null === item.getElementsByTagName('enclosure')){
                 Ti.API.debug('Skipping item ' + i + ' for lack of enclosure');
                 continue;
             }
 
             // Also skip items without Avsnitt eller Kvacksnack in the title
             var title = item.getElementsByTagName('title').item(0).textContent;
-            if( null == title.match(/Avsnitt/) && null == title.match(/Kvacksnack/) ) {
+            if( null === title.match(/Avsnitt/) && null === title.match(/Kvacksnack/) ) {
                 // Skip to next item
-                Ti.API.debug('Skipping item with index ' + i
-                        + ' for lacking Avsnitt or Kvacksnack in title');
+                Ti.API.debug('Skipping item with index ' + i +
+                        ' for lacking Avsnitt or Kvacksnack in title');
                 continue;				
             }
 
@@ -124,16 +125,14 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             pubDateTimeStamp = Date.parse(pubDate);
             if(pubDateTimeStamp > newerThen){
 
-                Ti.API.debug(pubDateTimeStamp
-                        + ' newer then '
-                        + newerThen
-                        + ', adding to newEpisodes');
+                Ti.API.debug(pubDateTimeStamp + ' newer then '+
+                        newerThen + ', adding to newEpisodes');
 
                 newEpisodes.push(item);	
             } else {
                 Ti.API.debug(
-                        pubDateTimeStamp + ' is less then '
-                        + newerThen + ', skipping');
+                        pubDateTimeStamp + ' is less then ' +
+                        newerThen + ', skipping');
                 break;
             }
         }
@@ -175,6 +174,6 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
     };
 
     return self;
-};
+}
 
 module.exports = Feed;

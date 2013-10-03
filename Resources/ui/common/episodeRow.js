@@ -5,14 +5,16 @@
 function EpisodeRow(episode){
 
     // Create the row
-    var self = Ti.UI.createTableViewRow({
-        className: 'episodeRow',
-        backgroundColor: '#FFFFFF',
-        episodeId: episode.id,
-        episodeTitle: episode.title,
-        layout: 'vertical',
-        hasChild: true
-    });
+    var self = Ti.UI.createTableViewRow(
+        {
+            className: 'episodeRow',
+            backgroundColor: '#FFFFFF',
+            episodeId: episode.id,
+            episodeTitle: episode.title,
+            layout: 'vertical',
+            hasChild: true
+        }
+    );
 
     // Episode Title
     var episodeTitle = Ti.UI.createLabel({
@@ -48,6 +50,6 @@ function EpisodeRow(episode){
 
     // And return the row
     return self;
-};
+}
 
 module.exports = EpisodeRow;

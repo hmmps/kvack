@@ -22,18 +22,18 @@ function DB(){
 	
 	// Make sure we have the episodes table
 	(function (){
-		var query = 'CREATE TABLE IF NOT EXISTS episodes ('
-                    + ' id integer primary key autoincrement'
-                    + ', title text'
-                    + ', pubDate text'
-                    + ', subtitle text'
-                    + ', description text'
-                    + ', notes text'
-                    + ', mediaURL text'
-                    + ', mediaPath text'
-                    + ', identifier text unique'
-                    + ', playStatus integer'
-                    + ')';
+		var query = 'CREATE TABLE IF NOT EXISTS episodes (' +
+                    ' id integer primary key autoincrement' +
+                    ', title text' +
+                    ', pubDate text' +
+                    ', subtitle text' +
+                    ', description text' +
+                    ', notes text' +
+                    ', mediaURL text' +
+                    ', mediaPath text' +
+                    ', identifier text unique' +
+                    ', playStatus integer' +
+                    ')';
 		
 		self.execute(query);
 	})();
@@ -43,16 +43,16 @@ function DB(){
 	self.saveEpisode = function(ep){
                 
                 // Build query
-		var query = 'INSERT OR IGNORE INTO episodes ('
-                    + 'title' 
-                    + ', pubDate'
-                    + ', subtitle'
-                    + ', description'
-                    + ', notes'
-                    + ', mediaURL'
-                    + ', identifier'
-                    + ', playStatus'
-                    + ') VALUES (?,?,?,?,?,?,?,?)';
+		var query = 'INSERT OR IGNORE INTO episodes (' +
+                    'title'  +
+                    ', pubDate' +
+                    ', subtitle' +
+                    ', description' +
+                    ', notes' +
+                    ', mediaURL' +
+                    ', identifier' +
+                    ', playStatus' +
+                    ') VALUES (?,?,?,?,?,?,?,?)';
 
 		// Do the actual insert	
 		self.execute( query,
@@ -62,8 +62,7 @@ function DB(){
                         ep.description,
                         ep.notes, ep.mediaURL,
                         ep.identifier,
-                        ep.playStatus
-                    );
+                        ep.playStatus );
 		
 		return self.lastInsertRowId;
 	};
@@ -81,11 +80,11 @@ function DB(){
                     latestUpdate = result.fieldByName('latest');
                 } else {
                     Ti.API.error('Found no latest episodes');
-                };
+                }
 
                 // If we have no saved episodes, query returns a valid result
                 // but the result is set to null, so set to 0
-                if( null == latestUpdate ){
+                if( null === latestUpdate ){
                     latestUpdate = 0;
                 }
 
@@ -159,7 +158,7 @@ function DB(){
 
             // Return an array of new Episodes as objects
             return newEpisodesList;
-        }
+        };
 
         // Method to grab specific episode
         self.getEpisodeWithId = function(episodeId){
@@ -185,7 +184,7 @@ function DB(){
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
                 episode.pubDate = result.fieldByName('pubDate');
-            };
+            }
 
             // Return episode as an object
             return episode;
