@@ -12,26 +12,22 @@ function DetailView() {
      * 
      * - Title
      * - Subtitle
-     * - Description
+     * - DescriptionContainer
+     *   - Description (webView)
      * 
      * - Status
      *   - played / unplayed
      *   - downloaded / not downloaded
      */
 
-    // Create holder for episode object
-    var episode;
-
 
     var self = Ti.UI.createView({
         layout: 'vertical'
     });
 
-    // load Db module
-    var EpisodesDb = require('Services/db');
-
     // Add subtitle to detailsView
     var subtitle = Ti.UI.createLabel({
+        top: '8dp',
         text: 'Episode subtitle',
         height:'auto',
         width:'auto',
@@ -43,6 +39,9 @@ function DetailView() {
     });
     self.add(subtitle);
 
+    // load Db module
+    var EpisodesDb = require('Services/db');
+
     // load mediaplayer module
     var MediaPlayerView = require('ui/common/mediaPlayerView');
 
@@ -50,11 +49,16 @@ function DetailView() {
     var mediaPlayerView = new MediaPlayerView();
     self.add(mediaPlayerView);
 
-    // Add view for episode details
-    var showNotes = Ti.UI.createWebView({
-        html: '<p>No show selected</p>'
+
+    // Add container for webView
+    var descriptionContainer = Ti.UI.createView();
+    self.add(descriptionContainer);
+    //
+    // Add view for episode description
+    var description = Ti.UI.createWebView({
+        html: 'No description of episode'
     });
-    self.add(showNotes);
+    descriptionContainer.add(description);
 
 
     self.addEventListener('itemSelected', function(e) {
@@ -63,18 +67,18 @@ function DetailView() {
         var episodesDb = new EpisodesDb();
 
         // Fetch episode details
-        episode = episodesDb.getEpisodeWithId(e.episodeId);
+        var episode = episodesDb.getEpisodeWithId(e.episodeId);
 
         // Close DB
         episodesDb.close();
 
         // Update detailview with info from db
-        self.updateView();
-        Ti.API.debug('Update detailView');
+        self.updateView(episode);
+        Ti.API.debug('[DetailView.js:73] Update detailView');
     });
 
 
-    self.updateView = function(){
+    self.updateView = function(episode){
 
         // Make sure we have episode info
         if( null === episode ){
@@ -96,8 +100,8 @@ function DetailView() {
         // Update data in Childviews
         subtitle.text = episode.subtitle;
         mediaPlayerView.setMediaPath(mediaLocation);
-        showNotes.setHtml(episode.notes);
-
+        //description.setHtml(episode.description);
+        description.html = episode.description;
     };
 
 

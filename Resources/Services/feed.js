@@ -6,7 +6,7 @@ function Feed(){
 
     var self = this;
 
-self.remoteURL = 'http://skenkonst.se/newKvack.xml';
+    self.remoteURL = 'http://skenkonst.se/newKvack.xml';
 
     // Fetch remote feed
     self.fetchRemoteFeed = function(){
@@ -108,7 +108,8 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             // skip items without enclosures
             // they contain no mediafiles
             if(null === item.getElementsByTagName('enclosure')){
-                Ti.API.debug('Skipping item ' + i + ' for lack of enclosure');
+                Ti.API.debug('[feed.js:111] Skipping item ' +
+                        i + ' for lack of enclosure');
                 continue;
             }
 
@@ -116,7 +117,7 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             var title = item.getElementsByTagName('title').item(0).textContent;
             if( null === title.match(/Avsnitt/) && null === title.match(/Kvacksnack/) ) {
                 // Skip to next item
-                Ti.API.debug('Skipping item with index ' + i +
+                Ti.API.debug('[feed.js:119] Skipping item with index ' + i +
                         ' for lacking Avsnitt or Kvacksnack in title');
                 continue;				
             }
@@ -125,12 +126,12 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
             pubDateTimeStamp = Date.parse(pubDate);
             if(pubDateTimeStamp > newerThen){
 
-                Ti.API.debug(pubDateTimeStamp + ' newer then '+
+                Ti.API.debug('[feed.js:128]' + pubDateTimeStamp + ' newer then '+
                         newerThen + ', adding to newEpisodes');
 
                 newEpisodes.push(item);	
             } else {
-                Ti.API.debug(
+                Ti.API.debug('[feed.js:133] ' +
                         pubDateTimeStamp + ' is less then ' +
                         newerThen + ', skipping');
                 break;
@@ -164,8 +165,30 @@ self.remoteURL = 'http://skenkonst.se/newKvack.xml';
         var dateString = xmlNode.getElementsByTagName('pubDate').item(0).textContent;
         episode.pubDate = Date.parse(dateString);
 
-        episode.description = xmlNode.getElementsByTagName('itunes:subtitle').item(0).textContent;
+        // Store duration in seconds
+        var rawDurationString = xmlNode.getElementsByTagName('itunes:duration').item(0).textContent;
+        var durationValues = rawDurationString.split(':');
+        if( durationValues.length == 3){
+            var totalDuration = Number(durationValues[0] * 3600) + 
+                Number(durationValues[1] * 60) + 
+                Number(durationValues[2]);
+            episode.mediaDuration = totalDuration;
+        } else {
+            Ti.API.error('[feed.js:176] Array with duration values contains' +
+                    ' the wrong number of arguments');
+        }
         episode.notes = xmlNode.getElementsByTagName('content:encoded').item(0).textContent;
+
+        // Description of episode is auto truncated in feed.
+        // Use the first paragraph of episode notes insted.
+        // First remove "<![CDATA[<p>
+        var paragraphStartsAtIndex = 3;
+        var paragraphEndsAtIndex = episode.notes.indexOf('</p>');
+        episode.description = episode.notes.slice(paragraphStartsAtIndex,
+                paragraphEndsAtIndex);
+        Ti.API.debug('[feed.js:188] description is: ' + episode.description);
+
+
         // episode.mediaURL = xmlNode.getElementsByTagName('enclusure').item(0).getAttributeNode('url').value;
         episode.identifier = xmlNode.getElementsByTagName('guid').item(0).textContent;
         episode.mediaURL = xmlNode.getElementsByTagName('enclosure').item(0).getAttributeNode('url').value;

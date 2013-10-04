@@ -34,6 +34,16 @@ function ApplicationWindow() {
 	});
 	detailContainer.add(detailView);
 	self.add(detailContainer);
+
+        // If we have episodes in DB, load the most recent in detailContainer
+        var EpisodesDb = require('Services/db');
+        var episodesDb = new EpisodesDb();
+        var newestEpisode = episodesDb.getNewestEpisode();
+        episodesDb.close();
+        if( newestEpisode ){
+            detailView.updateView(newestEpisode);
+        }
+
 	
 	//add behavior for master view
 	masterView.addEventListener('itemSelected', function(e) {
@@ -41,6 +51,6 @@ function ApplicationWindow() {
 	});
 	
 	return self;
-};
+}
 
 module.exports = ApplicationWindow;

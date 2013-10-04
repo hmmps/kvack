@@ -20,7 +20,7 @@ function ApplicationWindow() {
 	
 	//create detail view container
 	var detailContainerWindow = Ti.UI.createWindow({
-		title:'Product Details'
+		title:'Avsnitt'
 	});
 	detailContainerWindow.add(detailView);
 	
@@ -34,10 +34,11 @@ function ApplicationWindow() {
 	masterView.addEventListener('itemSelected', function(e) {
 		detailView.fireEvent('itemSelected',e);
                 detailContainerWindow.setTitle(e.title);
+                //detailContainerWindow.setTitle(e.subtitle);
 		navGroup.open(detailContainerWindow);
 	});
 	
 	return self;
-};
+}
 
 module.exports = ApplicationWindow;

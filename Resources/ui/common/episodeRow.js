@@ -11,6 +11,7 @@ function EpisodeRow(episode){
             backgroundColor: '#FFFFFF',
             episodeId: episode.id,
             episodeTitle: episode.title,
+            episodeSubtitle: episode.subtitle,
             layout: 'vertical',
             hasChild: true
         }
@@ -30,7 +31,7 @@ function EpisodeRow(episode){
     });
     self.add(episodeTitle);
 
-    // Episodesubtitle
+    // Episode Subtitle
     var subtitle = Ti.UI.createLabel({
         text: episode.subtitle,
         color: '#000000',
