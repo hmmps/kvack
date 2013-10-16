@@ -192,6 +192,7 @@ function DB(){
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
                 episode.pubDate = result.fieldByName('pubDate');
+                episode.mediaDuration = result.fieldByName('mediaDuration');
             }
 
             // Return episode as an object

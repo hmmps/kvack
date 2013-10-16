@@ -167,16 +167,18 @@ function Feed(){
 
         // Store duration in seconds
         var rawDurationString = xmlNode.getElementsByTagName('itunes:duration').item(0).textContent;
-        var durationValues = rawDurationString.split(':');
-        if( durationValues.length == 3){
-            var totalDuration = Number(durationValues[0] * 3600) + 
-                Number(durationValues[1] * 60) + 
-                Number(durationValues[2]);
-            episode.mediaDuration = totalDuration;
-        } else {
-            Ti.API.error('[feed.js:176] Array with duration values contains' +
-                    ' the wrong number of arguments');
-        }
+        episode.mediaDuration = rawDurationString;
+        Ti.API.info('mediaDuration from feed is: ' + episode.mediaDuration);
+        //var durationValues = rawDurationString.split(':');
+        //if( durationValues.length == 3){
+        //    var totalDuration = Number(durationValues[0] * 3600) + 
+        //        Number(durationValues[1] * 60) + 
+        //        Number(durationValues[2]);
+        //    episode.mediaDuration = totalDuration;
+        //} else {
+        //    Ti.API.error('[feed.js:176] Array with duration values contains' +
+        //            ' the wrong number of arguments');
+        //}
         episode.notes = xmlNode.getElementsByTagName('content:encoded').item(0).textContent;
 
         // Description of episode is auto truncated in feed.

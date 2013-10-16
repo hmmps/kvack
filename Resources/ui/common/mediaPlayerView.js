@@ -62,7 +62,9 @@ var MediaPlayerView = function(){
     //pb.show();
 
     // Add actions to playPauseButton
-    playPauseButton.addEventListener('click', function(){
+    playPauseButton.addEventListener('click', playMedia);
+
+    function playMedia(){
 
         if(mediaPlayer.playing){
             // if playing pause
@@ -76,6 +78,12 @@ var MediaPlayerView = function(){
             Ti.API.debug('[mediaPlayerView:56] Pressed play');
 
         } else {
+
+            // Add current episode to nowPlaying
+            Ti.App.Properties.setString(
+                'nowPlayingEpisodeTitle',
+                this.episodeTitle);
+            alert('setting playing episode to ' + this.episodeTitle);
 
             // If neither playing, nor paused,
             // start playing, and add stop button
@@ -112,7 +120,7 @@ var MediaPlayerView = function(){
             });
 
         }
-    });
+    }
 
     // Set default media mode
     Ti.Media.defaultAudioSessionMode = Ti.Media.AUDIO_SESSION_MODE_PLAYBACK;

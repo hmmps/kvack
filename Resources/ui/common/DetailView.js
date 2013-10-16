@@ -1,28 +1,8 @@
 function DetailView() {
 
-    /*
-     * Views to be contained in DetailView
-     * - Mediaplayer (Load as module)
-     *   - Buttons
-     *      - Play / Pause;
-     *   - Time
-     *      - Elapsed time
-     *      - Timelinescrubber
-     *      - Playing time
-     * 
-     * - Title
-     * - Subtitle
-     * - DescriptionContainer
-     *   - Description (webView)
-     * 
-     * - Status
-     *   - played / unplayed
-     *   - downloaded / not downloaded
-     */
-
-
     var self = Ti.UI.createView({
-        layout: 'vertical'
+        layout: 'vertical',
+        backgroundColor: '#fff'
     });
 
     // Add subtitle to detailsView
@@ -43,11 +23,33 @@ function DetailView() {
     var EpisodesDb = require('Services/db');
 
     // load mediaplayer module
-    var MediaPlayerView = require('ui/common/mediaPlayerView');
+    //var MediaPlayerView = require('ui/common/mediaPlayerView');
 
     // Add media player to detailsView
-    var mediaPlayerView = new MediaPlayerView();
-    self.add(mediaPlayerView);
+    //var mediaPlayerView = new MediaPlayerView();
+    //self.add(mediaPlayerView);
+
+    // Add playbutton
+    var playBtn = Ti.UI.createButton({
+        title: 'Spela'
+    });
+    self.add(playBtn);
+    playBtn.addEventListener('click', playEpisode);
+
+    function playEpisode(){
+        Ti.App.Properties.setObject('nowPlaying', self.data);
+        self.fireEvent('playEpisode');
+    }
+
+    // ** Stäng vy
+    var closeBtn = Ti.UI.createButton({
+        title: 'stäng',
+        height: '44dp'
+    });
+    self.add(closeBtn);
+    closeBtn.addEventListener('click', function(){
+        self.fireEvent('closeDetailView');
+    });
 
 
     // Add container for webView
@@ -75,6 +77,10 @@ function DetailView() {
         // Update detailview with info from db
         self.updateView(episode);
         Ti.API.debug('[DetailView.js:73] Update detailView');
+
+
+        Ti.API.debug('Current windows title is: ' +
+            Ti.UI.currentWindow);
     });
 
 
@@ -99,11 +105,14 @@ function DetailView() {
 
         // Update data in Childviews
         subtitle.text = episode.subtitle;
-        mediaPlayerView.setMediaPath(mediaLocation);
+        //mediaPlayerView.setMediaPath(mediaLocation);
+        //mediaPlayerView.episodeTitle = episode.title;
         //description.setHtml(episode.description);
-        description.html = episode.description;
-    };
+        description.html = '<html><body>' + episode.description + '</body></html>';
 
+        // save episodeData in detailView context
+        self.data = episode;
+    };
 
     return self;
 }

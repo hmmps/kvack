@@ -45,7 +45,6 @@ function EpisodeRow(episode){
     });
     self.add(subtitle);
 
-    // todo: add subtitle
     // todo: add heard/unheard indicator
     // todo: add 
 
