@@ -94,6 +94,12 @@ function ApplicationWindow() {
         if( Ti.Platform.name == 'android'){
             mediaPlayer.release();
         }
+
+        // close nowPlaying window
+        nowPlayingWin.close();
+
+        // And Unset mediaPlayer
+        mediaPlayer = undefined;
     }
 
     // Pause playing episode
