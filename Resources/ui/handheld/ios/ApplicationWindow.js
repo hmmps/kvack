@@ -44,7 +44,12 @@ function ApplicationWindow() {
 
     // Now playing button
     var nowPlayingButton = Ti.UI.createButton({
-        title: 'Spelas nu'
+        title: "Spelas nu",
+        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+        font: {
+            fontSize: '8sp'
+        }
+
     });
 
     //create iOS specific NavGroup UI
@@ -60,10 +65,12 @@ function ApplicationWindow() {
     // check for nowPlaying
     //detailContainerWindow.addEventListener('close', function(e){
     masterContainerWindow.addEventListener('focus', function(e){
-        Ti.API.debug('master has focus');
+        Ti.API.debug('Master has focus');
         // If we have a mediaPlayer object, then show 'nowPlaying' button
-        if( mediaPlayer ){
+        if( mediaPlayer != undefined ){
             masterContainerWindow.rightNavButton = nowPlayingButton;
+        } else {
+            masterContainerWindow.rightNavButton = undefined;
         }
     });
 
@@ -95,11 +102,11 @@ function ApplicationWindow() {
             mediaPlayer.release();
         }
 
-        // close nowPlaying window
-        nowPlayingWin.close();
-
-        // And Unset mediaPlayer
+        // Unset mediaPlayer
         mediaPlayer = undefined;
+
+        // And close nowPlaying window
+        nowPlayingWin.close();
     }
 
     // Pause playing episode

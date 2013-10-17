@@ -42,7 +42,6 @@ var closeWindowBtn = Ti.UI.createButton({
     top: '14dp',
     right: '8dp',
     color: '#F00',
-    backgroundColor: 'green',
     font: {
         fontSize: '12dp'
     }
@@ -93,7 +92,7 @@ stopBtn.addEventListener('click', function(){
     win.fireEvent('stopEpisode');
 
     // And reset playCount
-    playCount.text = '00:00:00';
+    elapsedTime.text = '00:00:00';
 });
 
 
