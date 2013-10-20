@@ -30,7 +30,7 @@ function DB(){
             ', description text' +
             ', notes text' +
             ', mediaURL text' +
-            ', mediaPath text' +
+            ', localPath text' +
             ', mediaDuration text' +
             ', identifier text unique' +
             ', playStatus integer' +
@@ -51,10 +51,11 @@ function DB(){
                     ', description' +
                     ', notes' +
                     ', mediaURL' +
+                    ', localPath' +
                     ', mediaDuration' +
                     ', identifier' +
                     ', playStatus' +
-                    ') VALUES (?,?,?,?,?,?,?,?,?)';
+                    ') VALUES (?,?,?,?,?,?,?,?,?,?)';
 
             // Do the actual insert	
             self.execute( query,
@@ -64,6 +65,7 @@ function DB(){
                     ep.description,
                     ep.notes,
                     ep.mediaURL,
+                    ep.localPath,
                     ep.mediaDuration,
                     ep.identifier,
                     ep.playStatus );
@@ -114,7 +116,7 @@ function DB(){
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.playStatus = result.fieldByName('playStatus');
-                episode.mediaPath = result.fieldByName('mediaPath');
+                episode.localPath = result.fieldByName('localPath');
                 episode.pubDate = result.fieldByName('pubDate');
 
                 // Add episode to episodesList
@@ -150,7 +152,7 @@ function DB(){
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.playStatus = result.fieldByName('playStatus');
-                episode.mediaPath = result.fieldByName('mediaPath');
+                episode.localPath = result.fieldByName('localPath');
                 episode.mediaURL = result.fieldByName('mediaURL');
                 episode.pubDate = result.fieldByName('pubDate');
 
@@ -184,10 +186,13 @@ function DB(){
             if( result.isValidRow() ){
 
                 // Add result to episode object
+                episode.episodeId = result.fieldByName('id');
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.playStatus = result.fieldByName('playStatus');
                 episode.mediaURL = result.fieldByName('mediaURL');
+                episode.localPath = result.fieldByName('localPath');
+                episode.mediaDuration = result.fieldByName('mediaDuration');
                 episode.identifier = result.fieldByName('identifier');
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
@@ -216,14 +221,17 @@ function DB(){
             if( result.isValidRow() ){
 
                 // Add result to episode object
+                episode.episodeId = result.fieldByName('id');
                 episode.title = result.fieldByName('title');
                 episode.subtitle = result.fieldByName('subtitle');
                 episode.playStatus = result.fieldByName('playStatus');
                 episode.mediaURL = result.fieldByName('mediaURL');
+                episode.localPath = result.fieldByName('localPath');
                 episode.identifier = result.fieldByName('identifier');
                 episode.description = result.fieldByName('description');
                 episode.notes = result.fieldByName('notes');
                 episode.pubDate = result.fieldByName('pubDate');
+                episode.mediaDuration = result.fieldByName('mediaDuration');
             } else {
                 // If there is no episode, return false
                 episode = false;

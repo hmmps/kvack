@@ -30,15 +30,18 @@ function DetailView() {
     //self.add(mediaPlayerView);
 
     // Add playbutton
-    var playBtn = Ti.UI.createButton({
-        title: 'Streama avsnitt'
+    var downloadBtn = Ti.UI.createButton({
+        title: 'Hämta avsnitt'
     });
-    self.add(playBtn);
-    playBtn.addEventListener('click', playEpisode);
+    self.add(downloadBtn);
+    downloadBtn.addEventListener('click', downloadEpisode);
 
-    function playEpisode(){
-        Ti.App.Properties.setObject('nowPlaying', self.data);
-        self.fireEvent('playEpisode');
+    function downloadEpisode(e){
+        // Episodeinfo is stored in self.data
+        Ti.API.debug('downloload episode with URL ' + self.data.mediaURL);
+        e.episodeId = self.data.episodeId;
+        e.mediaURL = self.data.mediaURL;
+        self.fireEvent('downloadEpisode', e);
     }
 
     // Add container for webView

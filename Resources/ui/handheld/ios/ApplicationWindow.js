@@ -58,9 +58,9 @@ function ApplicationWindow() {
     });
     self.add(navGroup);
 
-    //
-    // ** Behavior *****************************************
-    //
+    /*****************************************************
+     ** Behavior *****************************************
+     *****************************************************/
     
     // check for nowPlaying
     //detailContainerWindow.addEventListener('close', function(e){
@@ -92,6 +92,7 @@ function ApplicationWindow() {
     nowPlayingButton.addEventListener('click', function(){
         nowPlayingWin.open();
     });
+
 
     // Stop Playing
     nowPlayingWin.addEventListener('stopEpisode', stopEpisode);
@@ -166,14 +167,28 @@ function ApplicationWindow() {
             return nstring;
         }
 
-
-
         // And start playing
         mediaPlayer.play();
         nowPlayingWin.open();
     }
 
-
+    // Background network process interupts after c:a 10 min,
+    // so to play an entire episode in the background,
+    // network streaming can't be used. We need to download
+    // an entire episode to play all of it in background.
+    
+    // Create methods for saving episode(s)
+    var DownloadQue = require('Services/DownloadQue');
+    var downloads = new DownloadQue();
+    
+    // Listen for event to save en episode
+    detailView.addEventListener('downloadEpisode', function(e){
+      Ti.API.debug('downloadEpisode with URL ' + e.mediaURL);
+      downloads.addToQue(e);
+    });
+    
+    
+    
     return self;
 }
 
