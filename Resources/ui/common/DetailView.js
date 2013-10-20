@@ -31,7 +31,7 @@ function DetailView() {
 
     // Add playbutton
     var playBtn = Ti.UI.createButton({
-        title: 'Spela'
+        title: 'Streama avsnitt'
     });
     self.add(playBtn);
     playBtn.addEventListener('click', playEpisode);
@@ -40,17 +40,6 @@ function DetailView() {
         Ti.App.Properties.setObject('nowPlaying', self.data);
         self.fireEvent('playEpisode');
     }
-
-    // ** Stäng vy
-    var closeBtn = Ti.UI.createButton({
-        title: 'stäng',
-        height: '44dp'
-    });
-    self.add(closeBtn);
-    closeBtn.addEventListener('click', function(){
-        self.fireEvent('closeDetailView');
-    });
-
 
     // Add container for webView
     var descriptionContainer = Ti.UI.createView();
@@ -76,11 +65,6 @@ function DetailView() {
 
         // Update detailview with info from db
         self.updateView(episode);
-        Ti.API.debug('[DetailView.js:73] Update detailView');
-
-
-        Ti.API.debug('Current windows title is: ' +
-            Ti.UI.currentWindow);
     });
 
 
@@ -108,7 +92,7 @@ function DetailView() {
         //mediaPlayerView.setMediaPath(mediaLocation);
         //mediaPlayerView.episodeTitle = episode.title;
         //description.setHtml(episode.description);
-        description.html = '<html><body>' + episode.description + '</body></html>';
+        description.html = episode.description;
 
         // save episodeData in detailView context
         self.data = episode;

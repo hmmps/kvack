@@ -105,7 +105,7 @@ function MasterView() {
         var newerThen;
         if( self.newestEpisodeTimestamp == undefined ){
             newerThen = 0;
-            Ti.API.debug('[MasterView.js:105] No newestEpisodeTimeStamp');
+            //Ti.API.debug('[MasterView.js:105] No newestEpisodeTimeStamp');
         } else {
             newerThen = self.newestEpisodeTimestamp;
         }

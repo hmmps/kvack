@@ -6,7 +6,7 @@ function Feed(){
 
     var self = this;
 
-    self.remoteURL = 'http://skenkonst.se/newKvack.xml';
+    self.remoteURL = 'http://kvackyou.se/feed/';
 
     // Fetch remote feed
     self.fetchRemoteFeed = function(){
@@ -34,7 +34,7 @@ function Feed(){
             },
 
             // Set timeout for network request
-            timeout: 5000
+            timeout: 8000
         });
 
         // Open request
@@ -125,15 +125,10 @@ function Feed(){
             var pubDate = item.getElementsByTagName('pubDate').item(0).textContent;
             pubDateTimeStamp = Date.parse(pubDate);
             if(pubDateTimeStamp > newerThen){
-
-                Ti.API.debug('[feed.js:128]' + pubDateTimeStamp + ' newer then '+
-                        newerThen + ', adding to newEpisodes');
-
+                // episode is newer then latest update, add
                 newEpisodes.push(item);	
             } else {
-                Ti.API.debug('[feed.js:133] ' +
-                        pubDateTimeStamp + ' is less then ' +
-                        newerThen + ', skipping');
+                // Episode should already be in feed, skip
                 break;
             }
         }
@@ -168,17 +163,6 @@ function Feed(){
         // Store duration in seconds
         var rawDurationString = xmlNode.getElementsByTagName('itunes:duration').item(0).textContent;
         episode.mediaDuration = rawDurationString;
-        Ti.API.info('mediaDuration from feed is: ' + episode.mediaDuration);
-        //var durationValues = rawDurationString.split(':');
-        //if( durationValues.length == 3){
-        //    var totalDuration = Number(durationValues[0] * 3600) + 
-        //        Number(durationValues[1] * 60) + 
-        //        Number(durationValues[2]);
-        //    episode.mediaDuration = totalDuration;
-        //} else {
-        //    Ti.API.error('[feed.js:176] Array with duration values contains' +
-        //            ' the wrong number of arguments');
-        //}
         episode.notes = xmlNode.getElementsByTagName('content:encoded').item(0).textContent;
 
         // Description of episode is auto truncated in feed.
@@ -188,7 +172,6 @@ function Feed(){
         var paragraphEndsAtIndex = episode.notes.indexOf('</p>');
         episode.description = episode.notes.slice(paragraphStartsAtIndex,
                 paragraphEndsAtIndex);
-        Ti.API.debug('[feed.js:188] description is: ' + episode.description);
 
 
         // episode.mediaURL = xmlNode.getElementsByTagName('enclusure').item(0).getAttributeNode('url').value;
