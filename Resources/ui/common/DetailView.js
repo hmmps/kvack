@@ -81,8 +81,8 @@ function DetailView() {
 
         // Check if we are playing local or remote media
         var mediaLocation;
-        if( episode.mediaPath != undefined ){
-            mediaLocation = episode.mediaPath;
+        if( episode.localPath != undefined ){
+            mediaLocation = episode.localPath;
         } else if( episode.mediaURL != undefined ){
             mediaLocation = episode.mediaURL;
         } else {

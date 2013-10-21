@@ -243,19 +243,22 @@ function DB(){
         
         // Method to update episode identified by row id
         self.updateEpisode = function(episodeId, newValues){
+
+            Ti.API.debug('Updating episode with id: ' +  episodeId);
             
             // get episode to update
-            var episode = getEpisodeWithId(episodeId);
+            var episode = self.getEpisodeWithId(episodeId);
             
             // update episode with new Values
             for( keyToUpdate in newValues ){
-                episode[keyToUpdate] = newValues[keyToUpdate]
-                Ti.API.info('Changing ' + keyToUpdate + ' to ' + newValue + 'in episode with id ' + episodeId);
+                episode[keyToUpdate] = newValues[keyToUpdate];
+                Ti.API.info('Changing ' + keyToUpdate + ' to ' +
+                        newValues[keyToUpdate] + 'in episode with id ' + episodeId);
             }
             
             
             
-        }
+        };
 
         // Return open DB connection as the module
         return self;

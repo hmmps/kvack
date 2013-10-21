@@ -8,6 +8,8 @@ function ApplicationWindow() {
     var MasterView = require('ui/common/MasterView'),
         DetailView = require('ui/common/DetailView');
 
+    var DB = require('Services/db');
+
     //create object instance
     var self = Ti.UI.createWindow({
         backgroundColor:'#ffffff'
@@ -179,21 +181,110 @@ function ApplicationWindow() {
     // an entire episode to play all of it in background.
     
     // Create methods for saving episode(s)
-    var DownloadQue = require('Services/downloadQue');
-    var downloads = new DownloadQue();
+    var downloadQue = [];
+    var downloadingEpisode = false;
     
-    // Listen for event to save en episode
-    detailView.addEventListener('downloadEpisode', function(e){
-      Ti.API.debug('downloadEpisode with URL ' + e.mediaURL);
-      downloads.addToQue(e);
+    function addEpisodeToDownloadQue(episode){
+
+       var rootPath = Ti.Filesystem.applicationCacheDirectory + 
+           Ti.Filesystem.separator;
+       var filename = 'episode' + episode.episodeId;
+
+       var queItem = {
+           remoteURL: episode.mediaURL,
+           localPath: rootPath + filename
+       };
+
+       downloadQue.push(queItem);
+       self.fireEvent('episodeAddedToDownloadQue');
+    }
+
+    function fetchFirstQueItem(){
+
+        // Only try to download items when we have items
+        if(downloadQue.length >= 1){
+
+            Ti.API.info('Downloading episode');
+
+            // Set download to active;
+            downloadingEpisode = true;
+
+            var fileRequest = Ti.Network.createHTTPClient({
+
+                // Success
+                onload: function(){
+
+                    var rootPath = Ti.Filesystem.applicactionCacheDirectory + 
+                        Ti.Filesystem.separator;
+
+                    // We need to do some parsing to find the filename
+                    var remoteUrl = this.location;
+                    var filename = this.location.match(/[\w\d.]+$/);
+
+                    Ti.API.debug('filename is ' + filename);
+
+                    var fileHandle = Ti.Filesystem.getFile(rootPath + filename);
+                    fileHandle.write(this.responseData);
+                    Ti.App.fireEvent('episodeFinishedDownloading');
+                },
+
+                // Fail
+                onerror: function(e){
+                    Ti.API.error(e.error);
+                },
+
+                timeout: 10000
+            });
+
+            fileRequest.open('GET', downloadQue[0].remoteURL);
+            fileRequest.send();
+        }
+    }
+
+    Ti.App.addEventListener('episodeFinishedDownloading', function(e){
+
+        // download is finished, toggle downloadingEpisode to false
+        downloadingEpisode = false;
+
+        // And since first episode is downloaded, remove it from que
+        var savedEpisode = downloadQue.shift();
+
+        // find the filePath
+        var rootPath = Ti.Filesystem.applicationCacheDirectory +
+            Ti.Filesystem.separator;
+        var filename = savedEpisode.remoteURL.match(/[\w\d.]+$/);
+
+        // And update db to indicate episode is saved.
+        var db = new DB();
+        db.updateEpisode(savedEpisode.episodeId, {
+            localPath: rootPath + filename
+        });
+
+        // When we finished downloading an episode, see if we have remaining
+        // episodes in que
+        if( downloadQue.length >= 1 ){
+            // If we have items in que, start downloading next episode
+            fetchFirstQueItem();
+        }
     });
 
-    Ti.App.addEventListener('episodeAddedToDownloadQue', function(e){
-      Ti.API.info('app recieved event that episode is added');
-      if(false === downloads.downloading){
-        // Start downloading if not already downloading
-        downloads.downloadFirstEpisodeInQue();
-      }
+    // Listen for event to save en episode
+    detailView.addEventListener('downloadEpisode', function(e){
+        Ti.API.debug('caught event downloadEpisode');
+        // When we are told to download an episode, add it to
+        // the download que
+        addEpisodeToDownloadQue(e);
+    });
+
+    self.addEventListener('episodeAddedToDownloadQue', function(e){
+        // An episode is added, start downloading que items
+        // unless we are already doing it
+        
+        Ti.API.debug('episodeAddedToDownloadQue event caught');
+
+        // Fetch first episode in que
+        fetchFirstQueItem();
+
     });
     
     self.addEventListener('episodeSaved', function(e){
