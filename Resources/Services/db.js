@@ -200,6 +200,8 @@ function DB(){
                 episode.mediaDuration = result.fieldByName('mediaDuration');
             }
 
+            Ti.API.info('Fetched episode with title: ' + episode.title);
+
             // Return episode as an object
             return episode;
         };
@@ -248,16 +250,31 @@ function DB(){
             
             // get episode to update
             var episode = self.getEpisodeWithId(episodeId);
+
+            var tablesToUpdate = [];
+            var valuesToUpdate = [];
             
             // update episode with new Values
             for( keyToUpdate in newValues ){
                 episode[keyToUpdate] = newValues[keyToUpdate];
-                Ti.API.info('Changing ' + keyToUpdate + ' to ' +
-                        newValues[keyToUpdate] + 'in episode with id ' + episodeId);
+                Ti.API.info('Changing ' + keyToUpdate +
+                        ' to ' + newValues[keyToUpdate] +
+                        'in episode with id ' + episodeId);
+                tablesToUpdate.push(keyToUpdate + ' = ?');
+                valuesToUpdate.push(newValues[keyToUpdate]);
             }
-            
-            
-            
+            var tables = tablesToUpdate.join();
+            var values = valuesToUpdate.join();
+
+            // build query
+            var query = 'UPDATE episodes SET ' +
+                tables + ' WHERE id = ?';
+
+            var result = self.execute(query, values, episodeId);
+            self.close();
+
+            Ti.API.debug('episode with id ' + episodeId + ' should be updated');
+
         };
 
         // Return open DB connection as the module

@@ -186,13 +186,13 @@ function ApplicationWindow() {
     
     function addEpisodeToDownloadQue(episode){
 
-       var rootPath = Ti.Filesystem.applicationCacheDirectory + 
-           Ti.Filesystem.separator;
+       var rootPath = Ti.Filesystem.applicationCacheDirectory;
        var filename = 'episode' + episode.episodeId;
 
        var queItem = {
            remoteURL: episode.mediaURL,
-           localPath: rootPath + filename
+           localPath: rootPath + filename,
+           episodeId: episode.episodeId
        };
 
        downloadQue.push(queItem);
@@ -214,8 +214,7 @@ function ApplicationWindow() {
                 // Success
                 onload: function(){
 
-                    var rootPath = Ti.Filesystem.applicactionCacheDirectory + 
-                        Ti.Filesystem.separator;
+                    var rootPath = Ti.Filesystem.applicactionCacheDirectory;
 
                     // We need to do some parsing to find the filename
                     var remoteUrl = this.location;
@@ -241,7 +240,9 @@ function ApplicationWindow() {
         }
     }
 
-    Ti.App.addEventListener('episodeFinishedDownloading', function(e){
+    Ti.App.addEventListener('episodeFinishedDownloading', episodeDownloadFinished);
+
+    function episodeDownloadFinished(){
 
         // download is finished, toggle downloadingEpisode to false
         downloadingEpisode = false;
@@ -249,9 +250,10 @@ function ApplicationWindow() {
         // And since first episode is downloaded, remove it from que
         var savedEpisode = downloadQue.shift();
 
+        Ti.API.debug('savedEpisode containts ' + savedEpisode);
+
         // find the filePath
-        var rootPath = Ti.Filesystem.applicationCacheDirectory +
-            Ti.Filesystem.separator;
+        var rootPath = Ti.Filesystem.applicationCacheDirectory;
         var filename = savedEpisode.remoteURL.match(/[\w\d.]+$/);
 
         // And update db to indicate episode is saved.
@@ -260,13 +262,18 @@ function ApplicationWindow() {
             localPath: rootPath + filename
         });
 
+        Ti.API.info('Saved episode as ' + rootPath + filename);
+
         // When we finished downloading an episode, see if we have remaining
         // episodes in que
         if( downloadQue.length >= 1 ){
             // If we have items in que, start downloading next episode
             fetchFirstQueItem();
         }
-    });
+
+        // And refresh detailsView
+        detailView.updateView();
+    }
 
     // Listen for event to save en episode
     detailView.addEventListener('downloadEpisode', function(e){
@@ -292,6 +299,10 @@ function ApplicationWindow() {
       if(downloads.downloading === false){
         downloads.downloadFirstEpisodeInQue();
       }
+
+        // We also need to update the tableView
+        detailView.updateView();
+
     });
     
     
