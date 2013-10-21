@@ -170,7 +170,8 @@ function Feed(){
         // First remove "<![CDATA[<p>
         var paragraphStartsAtIndex = 3;
         var paragraphEndsAtIndex = episode.notes.indexOf('</p>');
-        episode.description = episode.notes.slice(paragraphStartsAtIndex,
+        episode.description =
+            episode.notes.slice(paragraphStartsAtIndex,
                 paragraphEndsAtIndex);
 
 

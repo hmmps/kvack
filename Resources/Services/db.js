@@ -240,6 +240,22 @@ function DB(){
             // Return episode as an object
             return episode;
         };
+        
+        // Method to update episode identified by row id
+        self.updateEpisode = function(episodeId, newValues){
+            
+            // get episode to update
+            var episode = getEpisodeWithId(episodeId);
+            
+            // update episode with new Values
+            for( keyToUpdate in newValues ){
+                episode[keyToUpdate] = newValues[keyToUpdate]
+                Ti.API.info('Changing ' + keyToUpdate + ' to ' + newValue + 'in episode with id ' + episodeId);
+            }
+            
+            
+            
+        }
 
         // Return open DB connection as the module
         return self;

@@ -65,7 +65,6 @@ function ApplicationWindow() {
     // check for nowPlaying
     //detailContainerWindow.addEventListener('close', function(e){
     masterContainerWindow.addEventListener('focus', function(e){
-        Ti.API.debug('Master has focus');
         // If we have a mediaPlayer object, then show 'nowPlaying' button
         if( mediaPlayer != undefined ){
             masterContainerWindow.rightNavButton = nowPlayingButton;
@@ -134,8 +133,10 @@ function ApplicationWindow() {
         // that we are playing the correct episode
         if( mediaPlayer == undefined ){
 
-            // Set audio mode. If not as playback, it mutes with the ringer/vibration switch on iPhone
-            Ti.Media.audioSessionMode = Ti.Media.AUDIO_SESSION_MODE_PLAYBACK;
+            // Set audio mode. If not as playback, it mutes with
+            // the ringer/vibration switch on iPhone
+            Ti.Media.audioSessionMode =
+                Ti.Media.AUDIO_SESSION_MODE_PLAYBACK;
 
             mediaPlayer = Ti.Media.createAudioPlayer({
                 url: episode.mediaURL,
@@ -178,7 +179,7 @@ function ApplicationWindow() {
     // an entire episode to play all of it in background.
     
     // Create methods for saving episode(s)
-    var DownloadQue = require('Services/DownloadQue');
+    var DownloadQue = require('Services/downloadQue');
     var downloads = new DownloadQue();
     
     // Listen for event to save en episode
@@ -186,7 +187,21 @@ function ApplicationWindow() {
       Ti.API.debug('downloadEpisode with URL ' + e.mediaURL);
       downloads.addToQue(e);
     });
+
+    Ti.App.addEventListener('episodeAddedToDownloadQue', function(e){
+      Ti.API.info('app recieved event that episode is added');
+      if(false === downloads.downloading){
+        // Start downloading if not already downloading
+        downloads.downloadFirstEpisodeInQue();
+      }
+    });
     
+    self.addEventListener('episodeSaved', function(e){
+      // Continue with next if not already downloading
+      if(downloads.downloading === false){
+        downloads.downloadFirstEpisodeInQue();
+      }
+    });
     
     
     return self;
