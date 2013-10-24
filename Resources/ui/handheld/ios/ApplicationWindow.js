@@ -126,8 +126,6 @@ function ApplicationWindow() {
     nowPlayingWin.addEventListener('playEpisode', playEpisode);
     function playEpisode(e){
 
-        Ti.API.info('Play episode');
-
         // First get the nowPlaying episode
         var episode = Ti.App.Properties.getObject('nowPlaying');
 
@@ -141,7 +139,7 @@ function ApplicationWindow() {
                 Ti.Media.AUDIO_SESSION_MODE_PLAYBACK;
 
             mediaPlayer = Ti.Media.createAudioPlayer({
-                url: episode.mediaURL,
+                url: episode.localPath,
                 allowBackground: true
             });
 
@@ -156,9 +154,9 @@ function ApplicationWindow() {
                 nowPlayingWin.fireEvent('setPlayCount', e);
 
             });
-        } else if( mediaPlayer.url != episode.mediaURL ){
+        } else if( mediaPlayer.url != episode.localPath ){
             mediaPlayer.stop();
-            mediaPlayer.setUrl(episode.mediaURL);
+            mediaPlayer.setUrl(episode.localPath);
         }
 
         // helper method to pad time values
@@ -184,15 +182,16 @@ function ApplicationWindow() {
     var downloadQue = [];
     var downloadingEpisode = false;
     
-    function addEpisodeToDownloadQue(episode){
+    function addEpisodeToDownloadQue(e){
 
        var rootPath = Ti.Filesystem.applicationCacheDirectory;
-       var filename = 'episode' + episode.episodeId;
+       var filename = 'episode' + e.episodeId;
 
        var queItem = {
-           remoteURL: episode.mediaURL,
+           remoteURL: e.mediaURL,
            localPath: rootPath + filename,
-           episodeId: episode.episodeId
+           episodeId: e.episodeId,
+           title: e.episodeTitle
        };
 
        downloadQue.push(queItem);
@@ -204,8 +203,6 @@ function ApplicationWindow() {
         // Only try to download items when we have items
         if(downloadQue.length >= 1){
 
-            Ti.API.info('Downloading episode');
-
             // Set download to active;
             downloadingEpisode = true;
 
@@ -214,13 +211,11 @@ function ApplicationWindow() {
                 // Success
                 onload: function(){
 
-                    var rootPath = Ti.Filesystem.applicactionCacheDirectory;
+                    var rootPath = Ti.Filesystem.applicationCacheDirectory;
 
                     // We need to do some parsing to find the filename
                     var remoteUrl = this.location;
                     var filename = this.location.match(/[\w\d.]+$/);
-
-                    Ti.API.debug('filename is ' + filename);
 
                     var fileHandle = Ti.Filesystem.getFile(rootPath + filename);
                     fileHandle.write(this.responseData);
@@ -250,8 +245,6 @@ function ApplicationWindow() {
         // And since first episode is downloaded, remove it from que
         var savedEpisode = downloadQue.shift();
 
-        Ti.API.debug('savedEpisode containts ' + savedEpisode);
-
         // find the filePath
         var rootPath = Ti.Filesystem.applicationCacheDirectory;
         var filename = savedEpisode.remoteURL.match(/[\w\d.]+$/);
@@ -261,8 +254,6 @@ function ApplicationWindow() {
         db.updateEpisode(savedEpisode.episodeId, {
             localPath: rootPath + filename
         });
-
-        Ti.API.info('Saved episode as ' + rootPath + filename);
 
         // When we finished downloading an episode, see if we have remaining
         // episodes in que
@@ -276,23 +267,9 @@ function ApplicationWindow() {
     }
 
     // Listen for event to save en episode
-    detailView.addEventListener('downloadEpisode', function(e){
-        Ti.API.debug('caught event downloadEpisode');
-        // When we are told to download an episode, add it to
-        // the download que
-        addEpisodeToDownloadQue(e);
-    });
+    detailView.addEventListener('downloadEpisode', addEpisodeToDownloadQue);
 
-    self.addEventListener('episodeAddedToDownloadQue', function(e){
-        // An episode is added, start downloading que items
-        // unless we are already doing it
-        
-        Ti.API.debug('episodeAddedToDownloadQue event caught');
-
-        // Fetch first episode in que
-        fetchFirstQueItem();
-
-    });
+    self.addEventListener('episodeAddedToDownloadQue', fetchFirstQueItem);
     
     self.addEventListener('episodeSaved', function(e){
       // Continue with next if not already downloading
@@ -300,8 +277,8 @@ function ApplicationWindow() {
         downloads.downloadFirstEpisodeInQue();
       }
 
-        // We also need to update the tableView
-        detailView.updateView();
+    // We also need to update the tableView
+    detailView.updateView();
 
     });
     

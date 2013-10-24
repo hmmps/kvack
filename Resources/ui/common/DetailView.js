@@ -30,24 +30,33 @@ function DetailView() {
     //self.add(mediaPlayerView);
 
     // Add controls
-    var buttonView = Ti.UI.createView({
-        layout: 'horizontal',
-        height: '44dp'
-    });
-    self.add(buttonView);
+    //var buttonView = Ti.UI.createView({
+    //    layout: 'horizontal',
+    //    height: '44dp'
+    //});
+    //self.add(buttonView);
 
     var downloadBtn = Ti.UI.createButton({
         title: 'Hämta avsnitt'
     });
+    self.add(downloadBtn);
+    downloadBtn.addEventListener('click', downloadEpisode);
+
     var playBtn = Ti.UI.createButton({
         title: 'Spela avsnitt'
+    });
+    self.add(playBtn);
+    playBtn.addEventListener('click', function(e){
+        Ti.App.Properties.setObject('nowPlaying', episode);
+        self.fireEvent('playEpisode');
     });
 
 
     function downloadEpisode(e){
         // Episodeinfo is stored in self.data
-        Ti.API.debug('downloload episode with URL ' + self.data.mediaURL);
+        alert('download episode with URL ' + self.data.mediaURL);
         e.episodeId = self.data.episodeId;
+        e.episodeTitle = self.data.title;
         e.mediaURL = self.data.mediaURL;
         self.fireEvent('downloadEpisode', e);
     }
@@ -81,6 +90,8 @@ function DetailView() {
 
     self.updateView = function(episode){
 
+        alert('Updating view');
+
         // We might be updating the current view, so if we have
         // not recieved episode as an argument, try using self.data
         if( arguments.length === 0  && null !== self.data ){
@@ -98,38 +109,27 @@ function DetailView() {
         }
 
         // See if episode is downloaded or not
-        
-        Ti.API.debug('episode object is' + episode);
-
-        if( null != episode.localPath ){
+        if( null != episode.localPath &&
+            Ti.Filesystem.getFile(episode.localPath).exists() ){
+            // We have a localpath, so episode should be downloaded
 
             var file = Ti.Filesystem.getFile(episode.localPath);
-            Ti.API.debug('localpath is ' + episode.localPath);
-
-            Ti.API.debug('do we have a file? ' + file.exists());
-
-            // Clean out buttonView
-            buttonView.removeAllChildren();
+            alert('localpath is ' + episode.localPath +
+                    "\ndo we have a file? " + file.exists());
             
-            // if episode at localPath exists
-            // Change "downloadbutton" to play button
-            buttonView.add(playBtn);
-            playBtn.addEventListener('click', function(e){
-                Ti.App.Properties.setObject('nowPlaying', episode);
-                self.fireEvent('playEpisode');
-            });
+            // Set button statuses
+            playBtn.enabled = true;
+            downloadBtn.enabled = false;
+
 
         } else {
             // Episode not downloaded
-            Ti.API.debug('Episode not cached');
-            Ti.API.debug('localPath is ' + episode.localPath);
+            alert('Episode not cached, localPath is ' + episode.localPath);
 
-            // Clean out buttonView
-            buttonView.removeAllChildren();
+            // Set button enabledes
+            playBtn.enabled = false;
+            downloadBtn.enabled = true;
 
-            // add download button
-            buttonView.add(downloadBtn);
-            downloadBtn.addEventListener('click', downloadEpisode);
         }
 
 
