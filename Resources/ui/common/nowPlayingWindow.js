@@ -48,16 +48,16 @@ var closeWindowBtn = Ti.UI.createButton({
 });
 win.add(closeWindowBtn);
 
-var elapsedTime = Ti.UI.createLabel({
-    text: '00:00:00/??:??:??',
-    textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-    top: '6dp',
-    font: {
-        fontFamily: 'HelveticaNeue-UltraLight',
-        fontSize: '22dp'
-    }
-});
-nowPlayingView.add(elapsedTime);
+//var elapsedTime = Ti.UI.createLabel({
+//    text: '00:00:00/??:??:??',
+//    textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+//    top: '6dp',
+//    font: {
+//        fontFamily: 'HelveticaNeue-UltraLight',
+//        fontSize: '22dp'
+//    }
+//});
+//nowPlayingView.add(elapsedTime);
 
 var playBtn = Ti.UI.createButton({
     title: 'Play',
@@ -110,10 +110,10 @@ playBtn.addEventListener('click', function(){
     win.fireEvent('playEpisode');
 });
 
-win.addEventListener('setPlayCount', function(e){
-    elapsedTime.text = e.hours + ':' + e.minutes + ':' + e.seconds +
-        '/' + episodeDuration;
-});
+//win.addEventListener('setPlayCount', function(e){
+//    elapsedTime.text = e.hours + ':' + e.minutes + ':' + e.seconds +
+//        '/' + episodeDuration;
+//});
 
 //
 // ** Methods **

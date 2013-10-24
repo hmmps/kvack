@@ -138,22 +138,22 @@ function ApplicationWindow() {
             Ti.Media.audioSessionMode =
                 Ti.Media.AUDIO_SESSION_MODE_PLAYBACK;
 
-            mediaPlayer = Ti.Media.createAudioPlayer({
+            mediaPlayer = Ti.Media.createSound({
                 url: episode.localPath,
                 allowBackground: true
             });
 
 
-            mediaPlayer.addEventListener('progress', function(e){
-                var played = Math.round(e.progress/1000);
-                e.minutes = pad(Math.floor(played/60));
-                e.hours = pad(Math.floor(e.minutes/60));
-                e.seconds = pad(played % 60);
+            //mediaPlayer.addEventListener('progress', function(e){
+            //    var played = Math.round(e.progress/1000);
+            //    e.minutes = pad(Math.floor(played/60));
+            //    e.hours = pad(Math.floor(e.minutes/60));
+            //    e.seconds = pad(played % 60);
 
-                // Try to set the text in playCount
-                nowPlayingWin.fireEvent('setPlayCount', e);
+            //    // Try to set the text in playCount
+            //    nowPlayingWin.fireEvent('setPlayCount', e);
 
-            });
+            //});
         } else if( mediaPlayer.url != episode.localPath ){
             mediaPlayer.stop();
             mediaPlayer.setUrl(episode.localPath);
@@ -235,7 +235,8 @@ function ApplicationWindow() {
         }
     }
 
-    Ti.App.addEventListener('episodeFinishedDownloading', episodeDownloadFinished);
+    Ti.App.addEventListener('episodeFinishedDownloading',
+            episodeDownloadFinished);
 
     function episodeDownloadFinished(){
 
@@ -255,10 +256,11 @@ function ApplicationWindow() {
             localPath: rootPath + filename
         });
 
-        // When we finished downloading an episode, see if we have remaining
-        // episodes in que
+        // When we finished downloading an episode,
+        // see if we have remaining episodes in que
         if( downloadQue.length >= 1 ){
-            // If we have items in que, start downloading next episode
+            // If we have items in que, continue to
+            // downloading next episode
             fetchFirstQueItem();
         }
 
@@ -267,9 +269,11 @@ function ApplicationWindow() {
     }
 
     // Listen for event to save en episode
-    detailView.addEventListener('downloadEpisode', addEpisodeToDownloadQue);
+    detailView.addEventListener('downloadEpisode',
+            addEpisodeToDownloadQue);
 
-    self.addEventListener('episodeAddedToDownloadQue', fetchFirstQueItem);
+    self.addEventListener('episodeAddedToDownloadQue',
+            fetchFirstQueItem);
     
     self.addEventListener('episodeSaved', function(e){
       // Continue with next if not already downloading

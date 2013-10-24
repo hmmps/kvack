@@ -47,14 +47,13 @@ function DetailView() {
     });
     self.add(playBtn);
     playBtn.addEventListener('click', function(e){
-        Ti.App.Properties.setObject('nowPlaying', episode);
+        Ti.App.Properties.setObject('nowPlaying', self.data);
         self.fireEvent('playEpisode');
     });
 
 
     function downloadEpisode(e){
         // Episodeinfo is stored in self.data
-        alert('download episode with URL ' + self.data.mediaURL);
         e.episodeId = self.data.episodeId;
         e.episodeTitle = self.data.title;
         e.mediaURL = self.data.mediaURL;
@@ -90,8 +89,6 @@ function DetailView() {
 
     self.updateView = function(episode){
 
-        alert('Updating view');
-
         // We might be updating the current view, so if we have
         // not recieved episode as an argument, try using self.data
         if( arguments.length === 0  && null !== self.data ){
@@ -114,18 +111,13 @@ function DetailView() {
             // We have a localpath, so episode should be downloaded
 
             var file = Ti.Filesystem.getFile(episode.localPath);
-            alert('localpath is ' + episode.localPath +
-                    "\ndo we have a file? " + file.exists());
             
             // Set button statuses
             playBtn.enabled = true;
             downloadBtn.enabled = false;
 
 
-        } else {
-            // Episode not downloaded
-            alert('Episode not cached, localPath is ' + episode.localPath);
-
+        } else { // Episode not downloaded
             // Set button enabledes
             playBtn.enabled = false;
             downloadBtn.enabled = true;
